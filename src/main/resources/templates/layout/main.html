@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:seс="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Курьер</title>
+    <link rel="stylesheet" type="text/css" th:href="@{'/css/bootstrap.css'}">
+    <script type="text/javascript" th:src="@{'/js/bootstrap.bundle.js'}"></script>
+    <link rel="icon" type="image/png" href="/icons/truck.png">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Карта</a>
+            <a class="navbar-brand" href="#">История заказов</a>
+            <a class="navbar-brand" href="#">Водители</a>
+            <a class="navbar-brand" href="#">Настройки</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                </ul>
+                <form class="d-flex" role="search">
+                    <button class="btn btn-outline-success" type="submit">Выйти</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</head>
+<body>
+<div layout:fragment="main-content">
+</div>
+</body>
+</html>

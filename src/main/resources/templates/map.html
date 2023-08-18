@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/main.html">
+<div layout:fragment="main-content">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <div id="map" style="display: flex; justify-content: center; width: 800px; height: 800px;"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="your-custom-map-script.js"></script>
+    <script>
+        // Создание настраиваемой иконки с вашим изображением
+        var truckIcon = L.icon({
+            iconUrl: '/icons/truck.png', // Путь к изображению иконки
+            iconSize: [32, 32], // Размер иконки
+            iconAnchor: [16, 32], // Анкер иконки
+            popupAnchor: [0, -25] // Анкер всплывающего окна (если оно открывается рядом с иконкой)
+        });
+        // Инициализация карты
+        var map = L.map('map').setView([43.238949, 76.889709], 13);
+
+        // Добавление слоя OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Добавление маркера
+        L.marker([43.24404757763458, 76.8905757498524]).addTo(map)
+            .bindPopup('Пятый элемент')
+            .openPopup();
+        L.marker([43.24145741849453, 76.89485371811344], { icon: truckIcon }).addTo(map)
+            .bindPopup('Водитель Валера')
+            .openPopup();
+    </script>
+</div>
+</html>

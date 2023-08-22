@@ -10,16 +10,31 @@ import lombok.Setter;
 @Table(name="t_drivers")
 public class Driver extends BaseEntity{
 
+    @Column(name = "login")
+    private String login;
+
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "name")
     private String name;
 
-    @Column(name = "imei")
-    private int imei;
+    /**
+     * Это статус занят/свободен от выполнения заказов.
+     */
+    @Column(name = "status_order")
+    private boolean statusOrder;
 
-    @Column(name = "status")
-    private boolean status;
+    /**
+     * Это статус на смене/выходной.
+     * (Если хотябы раз водитель поставил статус
+     * свободен то он оказывается на смене.
+     * В полночь все водители снимаются со смены)
+     */
+    @Column(name = "status_day")
+    private boolean statusDay;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    private Gps gps;
+    @Column(name = "token")
+    private String token;
 
 }

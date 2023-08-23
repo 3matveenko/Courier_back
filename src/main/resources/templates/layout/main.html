@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:seс="http://www.w3.org/1999/xhtml"
-      xmlns:sec="http://www.w3.org/1999/xhtml">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <title>Курьер</title>
     <link rel="stylesheet" type="text/css" th:href="@{'/css/bootstrap.css'}">
     <script type="text/javascript" th:src="@{'/js/bootstrap.bundle.js'}"></script>
     <link rel="icon" type="image/png" href="/icons/truck.png">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg bg-body-secondary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Карта</a>
-            <a class="navbar-brand" href="#">История заказов</a>
-            <a class="navbar-brand" href="#">Водители</a>
-            <a class="navbar-brand" href="#">Настройки</a>
+            <a class="navbar-brand" href="/">Карта</a>
+            <a class="navbar-brand" href="/orders">История заказов</a>
+            <a class="navbar-brand" href="/drivers">Водители</a>
+            <a class="navbar-brand" href="/settings">Настройки</a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
-                <form class="d-flex" role="search">
-                    <button class="btn btn-outline-success" type="submit">Выйти</button>
+                <form th:action="@{'/exit'}" method="post" class="d-flex" role="search">
+                    <button class="btn btn-outline-dark" type="submit">Выйти</button>
                 </form>
             </div>
         </div>

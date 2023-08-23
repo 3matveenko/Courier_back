@@ -1,8 +1,6 @@
 package com.example.courier.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +10,20 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name="t_orders")
-public class Order extends BaseEntity{
+public class Order{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private Long id;
+
+    /**
+     * 0 - принят
+     * 1 - в пути
+     * 2 - доставлен
+     */
+    @Column(name = "status_delivery")
+    private int statusDelivery;
 
     @Column(name = "guid")
     private String guid;
@@ -32,5 +43,19 @@ public class Order extends BaseEntity{
     @Column(name = "current")
     private String current;
 
+    /**
+     * Широта
+     */
+    @Column(name = "latitude")
+    private double latitude;
+
+    /**
+     * Долгота
+     */
+    @Column(name="longitude")
+    private double longitude;
+
+    @OneToOne
+    private Driver driver;
 
 }

@@ -8,7 +8,12 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name="t_drivers")
-public class Driver extends BaseEntity{
+public class Driver{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private Long id;
 
     @Column(name = "login")
     private String login;
@@ -36,5 +41,17 @@ public class Driver extends BaseEntity{
 
     @Column(name = "token")
     private String token;
+
+    /**
+     * Широта
+     */
+    @Column(name = "latitude")
+    private double latitude;
+
+    /**
+     * Долгота
+     */
+    @Column(name="longitude")
+    private double longitude;
 
 }

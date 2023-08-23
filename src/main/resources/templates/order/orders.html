@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/main.html">
+<div layout:fragment="main-content">
+  <div class="form-group col-md-2 mt-3 ms-3">
+    <label for="dateInput">Дата:</label>
+    <div  class="d-flex">
+      <input type="date" class="form-control mt-3" id="dateInput">
+      <button class="btn btn-outline-secondary mt-3 ms-2">Выбрать</button>
+    </div>
+  </div>
+  <table class="table table-hover mt-3">
+    <thead class="table-secondary">
+    <tr><td>Номер заказа</td><td>Клиент</td><td>Номер телефона</td><td>Адрес доставки</td><td>Время принятия заказа</td><td>Время доставки заказа</td><td>Статус</td></tr>
+    </thead>
+    <tbody>
+    <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+    </tbody>
+  </table>
+</div>
+</html>

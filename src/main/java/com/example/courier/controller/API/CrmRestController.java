@@ -1,9 +1,9 @@
 package com.example.courier.controller.API;
 
-import com.example.courier.model.exception.AuthoryException;
 import com.example.courier.model.exception.ForbiddenException;
 import com.example.courier.service.OrderService;
 import com.example.courier.service.SecurityService;
+import com.example.courier.service.SettingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,6 +25,9 @@ public class CrmRestController {
     @Autowired
     SecurityService securityService;
 
+    @Autowired
+    SettingService settingService;
+
     @Operation(summary = "новый заказ", description =  """
                                         Input: {
                                         "guid": "guid",
@@ -33,7 +36,7 @@ public class CrmRestController {
                                         "current": "имя клиента",
                                         "latitude": "широта",
                                         "longitude": "долгота",
-                                        "driver": "токен водителя",(token="", значит водитель не назначен)
+                                        "driver_token": "токен водителя",(driver_token="", значит водитель не назначен)
                                         } Output:{пока вопрос с ответом. надо понять как ответит водитель}""")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "400", description = "Ошибка json")
@@ -43,6 +46,7 @@ public class CrmRestController {
             @RequestBody String json,
             @RequestHeader("Authorization") String token) throws JsonProcessingException {
         try {
+            orderService.newTimer(true);
             securityService.crmSecurity(token);
             orderService.newOrder(json);
             return ResponseEntity.ok("ok");
@@ -53,6 +57,20 @@ public class CrmRestController {
         }
 
     }
+
+    @GetMapping("get_time")
+    public ResponseEntity<String> getTime(
+            @RequestHeader("Authorization") String token) throws ForbiddenException {
+        try {
+            securityService.crmSecurity(token);
+            return ResponseEntity.ok(settingService.getValueByKey("timer_start_time"));
+        } catch (ForbiddenException e){
+            return ResponseEntity.status(403).body("Invalid token");
+        }
+
+    }
+
+
 
 
     @GetMapping("/old")

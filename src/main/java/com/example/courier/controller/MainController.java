@@ -1,6 +1,7 @@
 package com.example.courier.controller;
 
 import com.example.courier.model.User;
+import com.example.courier.service.OrderService;
 import com.example.courier.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class MainController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    OrderService orderService;
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/")
     public String index(Model model,
@@ -26,6 +30,7 @@ public class MainController {
         User user = (User) userService.loadUserByUsername(email);
         session.setAttribute("userID", user.getId());
         session.setAttribute("userNAME", user.getName());
+        model.addAttribute("orders", orderService.getOrderItWork());
         return "map/map";
     }
 

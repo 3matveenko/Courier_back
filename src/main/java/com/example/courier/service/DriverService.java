@@ -50,4 +50,9 @@ public class DriverService {
         }
     }
 
+    public void appointmentDriver(){
+
+    }
+    
+
 }

@@ -22,6 +22,29 @@
             </div>
         </div>
     </nav>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        var serverName = window.location.hostname;
+        var serverPort = window.location.port;
+        var url = "http://" + serverName + ":" + serverPort + "/crm/get_time";
+        var headers = {
+            "Authorization": "108a5c76-552c-44cc-8af4-8050d0c886bc",
+            "Content-Type": "application/json"
+        };
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            headers: headers,
+            success: function (response) {
+                console.log(response)
+                console.log("ok")
+            },
+            error: function (xhr, status, error) {
+            console.log("error")
+            }
+        });
+    </script>
 </head>
 <body>
 <div layout:fragment="main-content">

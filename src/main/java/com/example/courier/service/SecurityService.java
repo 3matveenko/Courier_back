@@ -11,7 +11,7 @@ public class SecurityService {
     @Autowired
     SettingRepository settingRepository;
     public Boolean crmSecurity(String token)  throws ForbiddenException {
-    if(settingRepository.findByKey("crm_token").get().equals(token)){
+    if(settingRepository.findByKey("crm_token").get().getValue().equals(token)){
         return true;
     } else {
         throw new ForbiddenException("Invalid token");

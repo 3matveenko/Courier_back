@@ -12,275 +12,20 @@
                 <h4 class="text-center mt-3">
                     В очереди
                 </h4>
-                <div class="overflow-auto" style="max-height: 350px">
+                <div class="overflow-auto" style="height: 350px">
                     <div class="container-fluid ">
-                        <div class="row">
-                            <div class="col-md-6">
+                        <div class="row" th:each="order : ${orders}">
+                            <div class="col-md-6" th:if="${order.getStatusDelivery()==0}">
                                 <div class=" alert alert-danger alert-dismissible fade show" role="alert">
                                     <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
+                                        <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
+                                        <tr><td>Клиент :</td><td th:text="${order.getCurrent()}"></td></tr>
                                         <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
+                                            <td>Номер телефона :</td><td th:text="${order.getPhone()}"></td>
                                         <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
+                                            <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
                                         <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-danger alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
+                                            <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'hh:mm')}"></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -294,95 +39,22 @@
                 </h4>
                 <div class="overflow-auto" style="height: 350px">
                     <div class="container-fluid ">
-                        <div class="row">
-                    <div class="col-md-6">
+                        <div class="row" th:each="order : ${orders}">
+                    <div class="col-md-6" th:if="${order.getStatusDelivery()==1}">
                         <div class=" alert alert-warning alert-dismissible fade show" role="alert">
                             <table>
-                                <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                <tr><td>Клиент :</td><td>Андрей</td></tr>
+                                <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
+                                <tr><td>Клиент :</td><td th:text="${order.getCurrent()}"></td></tr>
                                 <tr>
-                                    <td>Номер телефона :</td>
-                                    <td>+79999999999</td>
+                                    <td>Номер телефона :</td><td th:text="${order.getPhone()}"></td>
                                 <tr>
-                                    <td>Адрес :</td>
-                                    <td>Алматы</td>
+                                    <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
                                 <tr>
-                                    <td>Время принятия заказа :</td>
-                                    <td>10:00</td>
-                                </tr>
-                                <tr>
-                                    <td>Водитель :</td>
-                                    <td>Валера</td>
+                                    <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'hh:mm')}"></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class=" alert alert-warning alert-dismissible fade show" role="alert">
-                            <table>
-                                <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                <tr>
-                                    <td>Номер телефона :</td>
-                                    <td>+79999999999</td>
-                                <tr>
-                                    <td>Адрес :</td>
-                                    <td>Алматы</td>
-                                <tr>
-                                    <td>Время принятия заказа :</td>
-                                    <td>10:00</td>
-                                </tr>
-                                <tr>
-                                    <td>Водитель :</td>
-                                    <td>Валера</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-warning alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Водитель :</td>
-                                            <td>Валера</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class=" alert alert-warning alert-dismissible fade show" role="alert">
-                                    <table>
-                                        <tr><td>Номер заказа :</td><td>guid</td></tr>
-                                        <tr><td>Клиент :</td><td>Андрей</td></tr>
-                                        <tr>
-                                            <td>Номер телефона :</td>
-                                            <td>+79999999999</td>
-                                        <tr>
-                                            <td>Адрес :</td>
-                                            <td>Алматы</td>
-                                        <tr>
-                                            <td>Время принятия заказа :</td>
-                                            <td>10:00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Водитель :</td>
-                                            <td>Валера</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
                         </div>
                         </div>
                 </div>
@@ -392,7 +64,9 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <!--    <script th:src="@{'/js/map.js'}">-->
-    <script>
+    <script th:inline="javascript">
+
+
         // Создание настраиваемой иконки с вашим изображением
         var truckIcon = L.icon({
             iconUrl: '/icons/truck.png', // Путь к изображению иконки
@@ -402,6 +76,12 @@
         });
         var dropIcon = L.icon({
             iconUrl: '/icons/drop.png', // Путь к изображению иконки
+            iconSize: [32, 32], // Размер иконки
+            iconAnchor: [16, 32], // Анкер иконки
+            popupAnchor: [0, -25] // Анкер всплывающего окна (если оно открывается рядом с иконкой)
+        });
+        var drop2Icon = L.icon({
+            iconUrl: '/icons/drop2.png', // Путь к изображению иконки
             iconSize: [32, 32], // Размер иконки
             iconAnchor: [16, 32], // Анкер иконки
             popupAnchor: [0, -25] // Анкер всплывающего окна (если оно открывается рядом с иконкой)
@@ -420,12 +100,28 @@
         L.marker([43.24145741849453, 76.89485371811344], {icon: truckIcon}).addTo(map)
             .bindPopup('Водитель Валераx')
             .openPopup();
-        L.marker([43.28670686963935, 76.95353530902307], {icon: dropIcon}).addTo(map)
-            .bindPopup('Клиент: Андрей')
-            .openPopup();
-        L.marker([43.227895060428274, 76.94328083345975], {icon: dropIcon}).addTo(map)
-            .bindPopup('Клиент: Андрей')
-            .openPopup();
+        var orders = [[${orders}]];
+
+        // Теперь у вас есть доступ к данным orders в JavaScript.
+        if (orders !== null) {
+            // Вы можете работать с данными здесь, например, перебирать массив:
+            for (var i = 0; i < orders.length; i++) {
+                if(orders[i].statusDelivery===0){
+                    console.log("aaaa")
+                    var order = orders[i];
+                    L.marker([orders[i].latitude, orders[i].longitude], {icon: dropIcon}).addTo(map)
+                        .bindPopup('Клиент: '+orders[i].current)
+                        .openPopup();
+                }
+                if(orders[i].statusDelivery===1){
+                    console.log("dddd")
+                    var order = orders[i];
+                    L.marker([orders[i].latitude, orders[i].longitude], {icon: drop2Icon}).addTo(map)
+                        .bindPopup('Клиент: '+orders[i].current)
+                        .openPopup();
+                }
+            }
+        }
     </script>
 </div>
 </html>

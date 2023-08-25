@@ -14,8 +14,8 @@
                 </h4>
                 <div class="overflow-auto" style="height: 350px">
                     <div class="container-fluid ">
-                        <div class="row" th:each="order : ${orders}">
-                            <div class="col-md-6" th:if="${order.getStatusDelivery()==0}">
+                        <div class="row">
+                            <div class="col-md-6" th:each="order : ${orders}" th:if="${order.getStatusDelivery()==0}">
                                 <div class=" alert alert-danger alert-dismissible fade show" role="alert">
                                     <table>
                                         <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
@@ -25,13 +25,12 @@
                                         <tr>
                                             <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
                                         <tr>
-                                            <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'hh:mm')}"></td>
+                                            <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
                                         </tr>
                                     </table>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <h4 class=" text-center mb-3">
@@ -39,8 +38,8 @@
                 </h4>
                 <div class="overflow-auto" style="height: 350px">
                     <div class="container-fluid ">
-                        <div class="row" th:each="order : ${orders}">
-                    <div class="col-md-6" th:if="${order.getStatusDelivery()==1}">
+                        <div class="row">
+                    <div class="col-md-6" th:each="order : ${orders}" th:if="${order.getStatusDelivery()==1}">
                         <div class=" alert alert-warning alert-dismissible fade show" role="alert">
                             <table>
                                 <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
@@ -50,23 +49,20 @@
                                 <tr>
                                     <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
                                 <tr>
-                                    <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'hh:mm')}"></td>
+                                    <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
-                        </div>
-                        </div>
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <!--    <script th:src="@{'/js/map.js'}">-->
     <script th:inline="javascript">
-
-
         // Создание настраиваемой иконки с вашим изображением
         var truckIcon = L.icon({
             iconUrl: '/icons/truck.png', // Путь к изображению иконки
@@ -88,7 +84,6 @@
         });
         // Инициализация карты
         var map = L.map('map').setView([43.238949, 76.889709], 13);
-        console.log("fffg")
         // Добавление слоя OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
@@ -107,14 +102,12 @@
             // Вы можете работать с данными здесь, например, перебирать массив:
             for (var i = 0; i < orders.length; i++) {
                 if(orders[i].statusDelivery===0){
-                    console.log("aaaa")
                     var order = orders[i];
                     L.marker([orders[i].latitude, orders[i].longitude], {icon: dropIcon}).addTo(map)
                         .bindPopup('Клиент: '+orders[i].current)
                         .openPopup();
                 }
                 if(orders[i].statusDelivery===1){
-                    console.log("dddd")
                     var order = orders[i];
                     L.marker([orders[i].latitude, orders[i].longitude], {icon: drop2Icon}).addTo(map)
                         .bindPopup('Клиент: '+orders[i].current)

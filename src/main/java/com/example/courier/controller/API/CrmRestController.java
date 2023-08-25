@@ -1,6 +1,7 @@
 package com.example.courier.controller.API;
 
 import com.example.courier.model.exception.ForbiddenException;
+import com.example.courier.service.LocationService;
 import com.example.courier.service.OrderService;
 import com.example.courier.service.SecurityService;
 import com.example.courier.service.SettingService;
@@ -28,6 +29,9 @@ public class CrmRestController {
     @Autowired
     SettingService settingService;
 
+    @Autowired
+    LocationService locationService;
+
     @Operation(summary = "новый заказ", description =  """
                                         Input: {
                                         "guid": "guid",
@@ -46,6 +50,7 @@ public class CrmRestController {
             @RequestBody String json,
             @RequestHeader("Authorization") String token) throws JsonProcessingException {
         try {
+System.out.println("итоговый угол = "+locationService.angleBetweenVerticalAndPoint(43.244487157876925, 76.88878579396281));
             orderService.newTimer(true);
             securityService.crmSecurity(token);
             orderService.newOrder(json);

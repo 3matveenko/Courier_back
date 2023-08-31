@@ -26,6 +26,8 @@ public class Driver{
 
     /**
      * Это статус занят/свободен от выполнения заказов.
+     * true - свободен
+     * false - занят
      */
     @Column(name = "status_order")
     private boolean statusOrder;

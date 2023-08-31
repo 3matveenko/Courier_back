@@ -13,6 +13,10 @@ public class LocationService {
     static double latitudeFe = 43.24402156690334;
     static double longitudeFe = 76.89066499039188;
 
+    //Ташкентская/Райымбека 43.26139803734262, 76.89206580446736
+
+    //Рыскулова/Емцова26а   43.261873722371554, 76.85757256553377
+
     public Double angleBetweenVerticalAndPoint(Double lat1, Double lon1){
 
         double a = disstanceBetweenPoints(latitudePol, longitudePol, latitudeFe, longitudeFe);
@@ -57,6 +61,5 @@ public class LocationService {
         return earthRadiusKm * c;
 
     }
-
 
 }

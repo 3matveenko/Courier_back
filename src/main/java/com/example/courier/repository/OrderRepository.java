@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -12,4 +13,6 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
     List<Order> findByStatusDeliveryBetween(Integer a, Integer b);
+
+    List<Order> findByDateStartBetween(Date date1,Date date2);
 }

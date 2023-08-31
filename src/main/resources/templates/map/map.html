@@ -10,7 +10,7 @@
             </div>
             <div class="col d-flex flex-column">
                 <h4 class="text-center mt-3">
-                    В очереди
+                    Заказы
                 </h4>
                 <div class="overflow-auto" style="height: 350px">
                     <div class="container-fluid ">
@@ -30,31 +30,47 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="col-md-6" th:each="order : ${orders}" th:if="${order.getStatusDelivery()==1}">
+                                <div class=" alert alert-warning alert-dismissible fade show" role="alert">
+                                    <table>
+                                        <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
+                                        <tr><td>Клиент :</td><td th:text="${order.getCurrent()}"></td></tr>
+                                        <tr>
+                                            <td>Номер телефона :</td><td th:text="${order.getPhone()}"></td>
+                                        <tr>
+                                            <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
+                                        <tr>
+                                            <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <h4 class=" text-center mb-3">
-                    В пути
+                <h4 class=" text-center mt-3">
+                    Водители
                 </h4>
                 <div class="overflow-auto" style="height: 350px">
-                    <div class="container-fluid ">
+                    <div class="container-fluid">
                         <div class="row">
-                    <div class="col-md-6" th:each="order : ${orders}" th:if="${order.getStatusDelivery()==1}">
-                        <div class=" alert alert-warning alert-dismissible fade show" role="alert">
-                            <table>
-                                <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
-                                <tr><td>Клиент :</td><td th:text="${order.getCurrent()}"></td></tr>
-                                <tr>
-                                    <td>Номер телефона :</td><td th:text="${order.getPhone()}"></td>
-                                <tr>
-                                    <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
-                                <tr>
-                                    <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
-                                </tr>
-                            </table>
+                            <div class="col-md-6">
+                                <div class="text-center">Свободен</div>
+                                <div th:each="driver : ${drivers}" th:if="${driver.isStatusOrder()}" class="mt-2 d-flex alert alert-success alert-dismissible fade show" role="alert">
+                                    <a th:href="'/change_status/'+${driver.getId()}" class="badge text-bg-danger text-decoration-none">-</a>
+                                    <div class="ms-5" th:text="${driver.getName()}"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-center">Занят</div>
+                                <div th:each="driver : ${drivers}" th:if="${!driver.isStatusOrder()}" class="mt-2 d-flex alert alert-danger alert-dismissible fade show" role="alert">
+                                    <a th:href="'/change_status/'+${driver.getId()}" class="badge text-bg-success text-decoration-none">+</a>
+                                    <div class="ms-5" th:text="${driver.getName()}"></div>
+                                    <img src="/icons/info.png" height="20px">
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
-                    </div>
                     </div>
                 </div>
             </div>

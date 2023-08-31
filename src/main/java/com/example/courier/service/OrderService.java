@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -60,6 +57,12 @@ public class OrderService {
             settingService.setTimeInDb("none");
             timer.cancel();
         }
+    }
+
+    public List<Order> getOrderByDate(Date date1){
+        Date date2 = new Date(date1.getTime());
+        date2.setHours(23);
+        return orderRepository.findByDateStartBetween(date1,date2);
     }
 
 

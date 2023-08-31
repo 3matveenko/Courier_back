@@ -2,27 +2,31 @@
 <html lang="en"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/main.html">
 <div layout:fragment="main-content">
-  <h4 class="text-center mt-3">На смене</h4>
-  <table class="table table-hover mt-3">
-    <thead class="table-secondary">
-    <tr><td>Номер заказа</td><td>Клиент</td><td>Номер телефона</td><td>Адрес доставки</td><td>Время принятия заказа</td><td>Время доставки заказа</td><td>Статус</td></tr>
-    </thead>
-    <tbody>
-    <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-    </tbody>
-  </table>
-  <h4 class="text-center mt-3">Не активные</h4>
-  <table class="table table-hover mt-3">
-    <thead class="table-secondary">
-    <tr><td></td><td>Имя</td><td>фвыа</td><td>Адрес доставки</td><td>Время принятия заказа</td><td>Время доставки заказа</td><td>Статус</td></tr>
-    </thead>
-    <tbody>
-    <tr><td><a th:href="'/customer/update/'" class="btn btn-transparent btn-outline-none">
-      <img src="/icons/edit.png" width="30" height="30"></a>
-      <button type="button" class="btn btn-transparent btn-outline-none" data-toggle="modal"
-              th:data-target="'#exampleModal'">
-        <img src="/icons/delete.png" width="30" height="30"></button></td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-    </tbody>
-  </table>
+    <div class="d-flex">
+        <div >
+            <h4 class="text-center mt-3">Не активные</h4>
+            <table class="table table-hover mt-3 ms-5">
+                <thead class="table-secondary">
+                <tr>
+                    <td>Cтатус</td>
+                    <td>Водитель</td>
+                </tr>
+                </thead>
+                <tbody  th:each="driver: ${drivers}">
+                <tr th:if="${driver.isStatusDay()}">
+                    <td>
+                        <button class="btn btn-success" th:if="${!driver.isStatusOrder()}">+</button>
+                        <button class="btn btn-danger" th:if="${driver.isStatusOrder()}">-</button>
+                    </td>
+                    <td th:text="${driver.getName()}"></td>
+                </tr>
+                <tr th:if="${driver.isStatusDay()}">
+                    <td><button class="btn btn-success">+</button></td>
+                    <td th:text="${driver.getName()}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 </html>

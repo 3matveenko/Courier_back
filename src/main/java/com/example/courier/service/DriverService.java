@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,9 +51,21 @@ public class DriverService {
         }
     }
 
+    public List<Driver> getAll(){
+        return driverRepository.findAll();
+    }
+
+    public void changeDriverDayStatus(Long driverId){
+        Driver driver = driverRepository.findById(driverId).orElseThrow();
+      if(driver.isStatusOrder()){
+          driver.setStatusOrder(false);
+      } else {
+          driver.setStatusOrder(true);
+      }
+      driverRepository.save(driver);
+    }
+    
     public void appointmentDriver(){
 
     }
-    
-
 }

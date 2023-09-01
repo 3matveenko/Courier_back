@@ -6,7 +6,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col">
-                <div id="map" style="height: 100%" class="d-flex justify-content-center mt-3"></div>
+                <div id="map" style="height: 100%" class="d-flex justify-content-center mt-2"></div>
             </div>
             <div class="col d-flex flex-column">
                 <h4 class="text-center mt-3">
@@ -15,32 +15,54 @@
                 <div class="overflow-auto" style="height: 350px">
                     <div class="container-fluid ">
                         <div class="row">
+                            <span>В очереди</span>
+                            <hr>
                             <div class="col-md-6" th:each="order : ${orders}" th:if="${order.getStatusDelivery()==0}">
                                 <div class=" alert alert-danger alert-dismissible fade show" role="alert">
                                     <table>
-                                        <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
-                                        <tr><td>Клиент :</td><td th:text="${order.getCurrent()}"></td></tr>
                                         <tr>
-                                            <td>Номер телефона :</td><td th:text="${order.getPhone()}"></td>
+                                            <td>Номер заказа :</td>
+                                            <td th:text="${order.getGuid()}"></td>
+                                        </tr>
                                         <tr>
-                                            <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
+                                            <td>Клиент :</td>
+                                            <td th:text="${order.getCurrent()}"></td>
+                                        </tr>
                                         <tr>
-                                            <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
+                                            <td>Номер телефона :</td>
+                                            <td th:text="${order.getPhone()}"></td>
+                                        <tr>
+                                            <td>Адрес :</td>
+                                            <td th:text="${order.getAddress()}"></td>
+                                        <tr>
+                                            <td>Время принятия заказа :</td>
+                                            <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
                                         </tr>
                                     </table>
                                 </div>
                             </div>
+                            <span>В пути</span>
+                            <hr>
                             <div class="col-md-6" th:each="order : ${orders}" th:if="${order.getStatusDelivery()==1}">
                                 <div class=" alert alert-warning alert-dismissible fade show" role="alert">
                                     <table>
-                                        <tr><td>Номер заказа :</td><td th:text="${order.getGuid()}"></td></tr>
-                                        <tr><td>Клиент :</td><td th:text="${order.getCurrent()}"></td></tr>
                                         <tr>
-                                            <td>Номер телефона :</td><td th:text="${order.getPhone()}"></td>
+                                            <td>Номер заказа :</td>
+                                            <td th:text="${order.getGuid()}"></td>
+                                        </tr>
                                         <tr>
-                                            <td>Адрес :</td><td th:text="${order.getAddress()}"></td>
+                                            <td>Клиент :</td>
+                                            <td th:text="${order.getCurrent()}"></td>
+                                        </tr>
                                         <tr>
-                                            <td>Время принятия заказа :</td><td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
+                                            <td>Номер телефона :</td>
+                                            <td th:text="${order.getPhone()}"></td>
+                                        <tr>
+                                            <td>Адрес :</td>
+                                            <td th:text="${order.getAddress()}"></td>
+                                        <tr>
+                                            <td>Время принятия заказа :</td>
+                                            <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -56,17 +78,44 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="text-center">Свободен</div>
-                                <div th:each="driver : ${drivers}" th:if="${driver.isStatusOrder()}" class="mt-2 d-flex alert alert-success alert-dismissible fade show" role="alert">
-                                    <a th:href="'/change_status/'+${driver.getId()}" class="badge text-bg-danger text-decoration-none">-</a>
-                                    <div class="ms-5" th:text="${driver.getName()}"></div>
+                                <hr>
+                                <div th:each="driver : ${drivers}" th:if="${driver.isStatusOrder()}"
+                                     class="mt-2 d-flex alert alert-success alert-dismissible fade show justify-content-between"
+                                     role="alert">
+                                    <div>
+                                        <a th:href="'/change_status/'+${driver.getId()}"
+                                           class="text-decoration-none"><img src="/icons/minus.png" height="25px"></a>
+                                    </div>
+                                    <div th:text="${driver.getName()}"></div>
+
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="text-center">Занят</div>
-                                <div th:each="driver : ${drivers}" th:if="${!driver.isStatusOrder()}" class="mt-2 d-flex alert alert-danger alert-dismissible fade show" role="alert">
-                                    <a th:href="'/change_status/'+${driver.getId()}" class="badge text-bg-success text-decoration-none">+</a>
-                                    <div class="ms-5" th:text="${driver.getName()}"></div>
-                                    <img src="/icons/info.png" height="20px">
+                                <hr>
+                                <div th:each="driver : ${drivers}" th:if="${!driver.isStatusOrder()}"
+                                     class="mt-2 d-flex alert alert-danger alert-dismissible fade show justify-content-between"
+                                     role="alert">
+                                    <div>
+                                        <a th:href="'/change_status/'+${driver.getId()}"
+                                           class="text-decoration-none"><img src="/icons/plus.png" height="25px"></a>
+                                        <img style="cursor: pointer" data-bs-toggle="modal" th:data-bs-target="'#exampleModal'+${driver.getId()}" class="ms-4" src="/icons/info.png" height="25px">
+
+                                    </div>
+                                    <div th:text="${driver.getName()}"></div>
+                                    <div class="modal fade" th:id="'exampleModal'+${driver.getId()}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    Удалить водителя <span th:text="${driver.getName()}"></span>?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                                                    <a th:href="'/delete_driver/'+${driver.getId()}" type="button" class="btn btn-danger">Удалить</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
@@ -117,16 +166,16 @@
         if (orders !== null) {
             // Вы можете работать с данными здесь, например, перебирать массив:
             for (var i = 0; i < orders.length; i++) {
-                if(orders[i].statusDelivery===0){
+                if (orders[i].statusDelivery === 0) {
                     var order = orders[i];
                     L.marker([orders[i].latitude, orders[i].longitude], {icon: dropIcon}).addTo(map)
-                        .bindPopup('Клиент: '+orders[i].current)
+                        .bindPopup('Клиент: ' + orders[i].current)
                         .openPopup();
                 }
-                if(orders[i].statusDelivery===1){
+                if (orders[i].statusDelivery === 1) {
                     var order = orders[i];
                     L.marker([orders[i].latitude, orders[i].longitude], {icon: drop2Icon}).addTo(map)
-                        .bindPopup('Клиент: '+orders[i].current)
+                        .bindPopup('Клиент: ' + orders[i].current)
                         .openPopup();
                 }
             }

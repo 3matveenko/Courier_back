@@ -63,21 +63,6 @@ System.out.println("итоговый угол = "+locationService.angleBetweenVe
 
     }
 
-    @GetMapping("get_time")
-    public ResponseEntity<String> getTime(
-            @RequestHeader("Authorization") String token) throws ForbiddenException {
-        try {
-            securityService.crmSecurity(token);
-            return ResponseEntity.ok(settingService.getValueByKey("timer_start_time"));
-        } catch (ForbiddenException e){
-            return ResponseEntity.status(403).body("Invalid token");
-        }
-
-    }
-
-
-
-
     @GetMapping("/old")
     public ResponseEntity<String> get(
             @RequestHeader("Authorization") String headerValue){

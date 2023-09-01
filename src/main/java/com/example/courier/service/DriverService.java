@@ -64,6 +64,10 @@ public class DriverService {
       }
       driverRepository.save(driver);
     }
+
+    public void deleteById(Long driverId){
+        driverRepository.delete(driverRepository.findById(driverId).orElseThrow());
+    }
     
     public void appointmentDriver(){
 

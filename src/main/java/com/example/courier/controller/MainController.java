@@ -77,18 +77,16 @@ public class MainController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping(value = "/drivers")
-    public String drivers(
-            Model model
-    ){
-        model.addAttribute("drivers", driverService.getAll());
-        return "driver/drivers";
-    }
-
-    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/change_status/{driverId}")
     public String changeStatus(@PathVariable Long driverId){
         driverService.changeDriverDayStatus(driverId);
+        return "redirect:/";
+    }
+
+    @GetMapping(value = "/delete_driver/{driverId}")
+    public String deleteDriver(
+            @PathVariable Long driverId){
+        driverService.deleteById(driverId);
         return "redirect:/";
     }
 

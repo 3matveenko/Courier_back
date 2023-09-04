@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,11 +56,13 @@ public class DriverService {
         return driverRepository.findAll();
     }
 
-    public void changeDriverDayStatus(Long driverId){
+    public void changeDriverOrderStatus(Long driverId){
         Driver driver = driverRepository.findById(driverId).orElseThrow();
       if(driver.isStatusOrder()){
+          driver.setTimeFree(null);
           driver.setStatusOrder(false);
       } else {
+          driver.setTimeFree(new Date());
           driver.setStatusOrder(true);
       }
       driverRepository.save(driver);
@@ -68,8 +71,9 @@ public class DriverService {
     public void deleteById(Long driverId){
         driverRepository.delete(driverRepository.findById(driverId).orElseThrow());
     }
-    
-    public void appointmentDriver(){
 
+    public List<Driver> findAllByStatusOrder(Boolean status){
+        return driverRepository.findAllByStatusOrder(status);
     }
+
 }

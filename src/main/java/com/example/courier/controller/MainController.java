@@ -79,7 +79,7 @@ public class MainController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/change_status/{driverId}")
     public String changeStatus(@PathVariable Long driverId){
-        driverService.changeDriverDayStatus(driverId);
+        driverService.changeDriverOrderStatus(driverId);
         return "redirect:/";
     }
 

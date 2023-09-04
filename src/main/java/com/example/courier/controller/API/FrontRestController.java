@@ -1,6 +1,7 @@
 package com.example.courier.controller.API;
 
 import com.example.courier.model.exception.ForbiddenException;
+import com.example.courier.model.exception.TimeException;
 import com.example.courier.service.SecurityService;
 import com.example.courier.service.SettingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,9 +29,11 @@ public class FrontRestController {
             @RequestHeader("Authorization") String token) throws ForbiddenException {
         try {
             securityService.crmSecurity(token);
-            return ResponseEntity.ok(settingService.getValueByKey("timer_start_time"));
+            return ResponseEntity.ok(settingService.getTimeOrderChange());
         } catch (ForbiddenException e){
             return ResponseEntity.status(403).body("Invalid token");
+        } catch (TimeException e){
+            return ResponseEntity.status(606).body("no_time");
         }
 
     }

@@ -58,5 +58,12 @@ public class Order{
     @OneToOne
     private Driver driver;
 
+    /**
+     * Угол между вектрами:
+     * - fe/северный полюс
+     * - fe/наш заказ
+     */
+    @Column(name = "angle")
+    private double angle;
 
 }

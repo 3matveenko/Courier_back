@@ -1,12 +1,11 @@
 package com.example.courier.service;
 
+import com.example.courier.model.Driver;
 import com.example.courier.model.Order;
 import com.example.courier.repository.OrderRepository;
-import com.example.courier.repository.SettingRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +16,17 @@ import java.util.*;
 public class OrderService {
 
     @Autowired
+    LocationService locationService;
+
+    @Autowired
+    DriverService driverService;
+
+    @Autowired
     OrderRepository orderRepository;
 
     @Autowired
     SettingService settingService;
 
-    @Autowired
-    DriverService driverService;
 
     static Timer timer;
 
@@ -33,6 +36,7 @@ public class OrderService {
         Order order = objectMapper.readValue(json, Order.class);
         order.setDateStart(new Date());
         order.setStatusDelivery(0);
+        order.setAngle(locationService.angleBetweenVerticalAndPoint(order.getLatitude(),order.getLongitude()));
         orderRepository.save(order);
     }
 
@@ -46,7 +50,7 @@ public class OrderService {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    driverService.appointmentDriver();
+                    appointmentDriverAuto();
                     settingService.setTimeInDb("none");
                     timer.cancel();
                 }
@@ -59,10 +63,27 @@ public class OrderService {
         }
     }
 
+    public void appointmentDriverAuto(){
+        List<Order> orders = getOrdersByStatusDelivery(0);
+        List<Driver> drivers = driverService.findAllByStatusOrder(true);
+        orders.sort(Comparator.comparing(Order::getAngle));
+        drivers.sort(Comparator.comparing(Driver::getTimeFree));
+
+    }
+
     public List<Order> getOrderByDate(Date date1){
         Date date2 = new Date(date1.getTime());
         date2.setHours(23);
         return orderRepository.findByDateStartBetween(date1,date2);
+    }
+
+    /**
+     * 0 - принят
+     * 1 - в пути
+     * 2 - доставлен
+     */
+    public List<Order> getOrdersByStatusDelivery(Integer status){
+        return orderRepository.findByStatusDelivery(status);
     }
 
 

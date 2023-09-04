@@ -14,8 +14,10 @@
             <a class="navbar-brand" href="/settings">Настройки</a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    таймеркк
+
                 </ul>
+                <div  id="orders_on" class="me-5 d-flex">
+                </div>
                 <form th:action="@{'/exit'}" method="post" class="d-flex" role="search">
                     <button class="btn btn-outline-dark" type="submit">Выйти</button>
                 </form>
@@ -24,9 +26,12 @@
     </nav>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+        setTimeout(function() {
+            location.reload();
+        }, 60000);
         var serverName = window.location.hostname;
         var serverPort = window.location.port;
-        var url = "http://" + serverName + ":" + serverPort + "/crm/get_time";
+        var url = "http://" + serverName + ":" + serverPort + "/front/get_time";
         var headers = {
             "Authorization": "108a5c76-552c-44cc-8af4-8050d0c886bc",
             "Content-Type": "application/json"
@@ -37,11 +42,25 @@
             url: url,
             headers: headers,
             success: function (response) {
-                console.log(response)
-                console.log("ok")
+                var timeParts = response.split(':');
+                var hours = parseInt(timeParts[0], 10);
+                var minutes = parseInt(timeParts[1], 10);
+
+                var currentTime = new Date();
+                currentTime.setHours(hours);
+                currentTime.setMinutes(minutes);
+                currentTime.setMinutes(currentTime.getMinutes() + 30);
+
+                var timeDifference = (currentTime - new Date()) / (1000 * 60);
+
+                $("#orders_on").text('До распределения заказов осталось: '+Math.floor(timeDifference)+' мин.');
             },
             error: function (xhr, status, error) {
-            console.log("error")
+                if (xhr.status === 606) {
+                    $("#orders_on").text('Нет заказов для распределения');
+                    console.log("606");
+                }
+                console.log("error");
             }
         });
     </script>

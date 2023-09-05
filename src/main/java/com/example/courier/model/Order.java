@@ -64,6 +64,6 @@ public class Order{
      * - fe/наш заказ
      */
     @Column(name = "angle")
-    private double angle;
+    private Double angle;
 
 }

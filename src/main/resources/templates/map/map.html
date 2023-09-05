@@ -79,7 +79,7 @@
                             <div class="col-md-6">
                                 <div class="text-center">Свободен</div>
                                 <hr>
-                                <div th:each="driver : ${drivers}" th:if="${driver.isStatusOrder()}"
+                                <div th:each="driver : ${drivers}" th:if="${!driver.isStatusOrder()}"
                                      class="mt-2 d-flex alert alert-success alert-dismissible fade show justify-content-between"
                                      role="alert">
                                     <div>
@@ -93,7 +93,7 @@
                             <div class="col-md-6">
                                 <div class="text-center">Занят</div>
                                 <hr>
-                                <div th:each="driver : ${drivers}" th:if="${!driver.isStatusOrder()}"
+                                <div th:each="driver : ${drivers}" th:if="${driver.isStatusOrder()}"
                                      class="mt-2 d-flex alert alert-danger alert-dismissible fade show justify-content-between"
                                      role="alert">
                                     <div>
@@ -158,6 +158,9 @@
             .bindPopup('Пятый элемент')
             .openPopup();
         L.marker([43.24145741849453, 76.89485371811344], {icon: truckIcon}).addTo(map)
+            .bindPopup('Водитель Валераx')
+            .openPopup();
+        L.marker([43.156048, 76.822801], {icon: truckIcon}).addTo(map)
             .bindPopup('Водитель Валераx')
             .openPopup();
         var orders = [[${orders}]];

@@ -76,4 +76,8 @@ public class DriverService {
         return driverRepository.findAllByStatusOrder(status);
     }
 
+    public void save(Driver driver){
+        driverRepository.save(driver);
+    }
+
 }

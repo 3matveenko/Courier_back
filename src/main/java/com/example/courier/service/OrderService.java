@@ -69,7 +69,7 @@ public class OrderService {
      * @return
      */
     public int appointmentDriverAuto() {
-        int angle = Integer.parseInt(settingService.getValueByKey("angle"));
+        int sector = Integer.parseInt(settingService.getValueByKey("angle"));
         List<Order> orders = getOrdersByStatusDelivery(0);
         List<Driver> drivers = driverService.findAllByStatusOrder(true);
         if (drivers.isEmpty()) {
@@ -81,45 +81,35 @@ public class OrderService {
             Driver driver = drivers.get(0);
             driver.setStatusOrder(false);
             driverService.save(driver);
-            boolean flag = true;
-            int x = 1;
-            int y = orders.size() - 1;
             if (drivers.size() > 1) {
-                while (flag) {
-                    if (orders.get(0).getAngle() + angle > orders.get(x).getAngle()) {
-                        x = x + 1;
-                    } else if (orders.get(0).getAngle() - angle < 0) {
-                        if (orders.get(y).getAngle() > (360 + orders.get(0).getAngle() - angle)) {
-                            y = y - 1;
-                        } else {
-                            flag = false;
+                boolean bool = true;
+                double secondPoint = orders.get(0).getAngle()+ sector;
+                if (secondPoint>360){
+                    bool = false;
+                }
+                List<Integer> indexes = new ArrayList<>();
+                for (int i=0;i<orders.size();i++){
+                    if(bool){
+                        if (orders.get(i).getAngle()<secondPoint){
+                            indexes.add(i);
                         }
                     } else {
-                        flag = false;
+                        if(orders.get(i).getAngle()>orders.get(0).getAngle()||orders.get(i).getAngle()<secondPoint){
+                            indexes.add(i);
+                        }
                     }
                 }
-                orders.get(0).setDriver(driver);
-                if (x != 1) {
-                    for (int i = 1; i <= x; i++) {
-                        orders.get(i).setDriver(driver);
-                    }
-                }
-                if (y != orders.size() - 1) {
-                    for (int i = y; i < orders.size(); i++) {
-                        orders.get(i).setDriver(driver);
+                if (!indexes.isEmpty()) {
+                    for(Integer index: indexes){
+                        orders.get(index).setDriver(driver);
+                        orders.get(index).setStatusDelivery(1);
+                        save(orders.get(index));
+                        orders.remove(orders.get(index));
                     }
                 }
                 //***************************************
                 //отправь уведомление водителю, дождались ответа
                 //***************************************
-                Iterator<Order> iterator = orders.iterator();
-                while (iterator.hasNext()) {
-                    Order order = iterator.next();
-                    if (order.getDriver() != null) {
-                        order.setStatusDelivery(1);
-                        iterator.remove();
-                    }
-                }
             } else {
                 for (Order order : orders) {
                     order.setStatusDelivery(1);

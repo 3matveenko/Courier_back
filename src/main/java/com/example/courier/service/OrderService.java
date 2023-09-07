@@ -1,5 +1,6 @@
 package com.example.courier.service;
 
+import com.example.courier.model.Assign;
 import com.example.courier.model.Driver;
 import com.example.courier.model.Order;
 import com.example.courier.repository.OrderRepository;
@@ -26,6 +27,9 @@ public class OrderService {
 
     @Autowired
     SettingService settingService;
+
+    @Autowired
+    AssignService assignService;
 
 
     static Timer timer;
@@ -77,53 +81,23 @@ public class OrderService {
         }
         orders.sort(Comparator.comparing(Order::getAngle));
         drivers.sort(Comparator.comparing(Driver::getTimeFree));
-        do {
-            Driver driver = drivers.get(0);
-            driver.setStatusOrder(false);
-            driverService.save(driver);
-            if (drivers.size() > 1) {
-                boolean bool = true;
-                double secondPoint = orders.get(0).getAngle()+ sector;
-                if (secondPoint>360){
-                    bool = false;
-                }
-                List<Integer> indexes = new ArrayList<>();
-                for (int i=0;i<orders.size();i++){
-                    if(bool){
-                        if (orders.get(i).getAngle()<secondPoint){
-                            indexes.add(i);
-                        }
-                    } else {
-                        if(orders.get(i).getAngle()>orders.get(0).getAngle()||orders.get(i).getAngle()<secondPoint){
-                            indexes.add(i);
-                        }
-                    }
-                }
-                if (!indexes.isEmpty()) {
-                    for(Integer index: indexes){
-                        orders.get(index).setDriver(driver);
-                        orders.get(index).setStatusDelivery(1);
-                        save(orders.get(index));
-                        orders.remove(orders.get(index));
-                    }
-                }
-                //***************************************
-                //отправь уведомление водителю, дождались ответа
-                //***************************************
-            } else {
-                for (Order order : orders) {
-                    order.setStatusDelivery(1);
-                    order.setDriver(driver);
-                    save(order);
-                    //*****************
-                    //уведомление водиле. Дождались ответа
-                    //*****************
-                    driver.setStatusOrder(false);
-                    driverService.save(driver);
-                }
+        List<Order> orders1 = new ArrayList<>(orders);
+        List<Driver> drivers1 = new ArrayList<>(drivers);
+        List<Assign> assigns =  assignService.StepByStepPlus(orders, drivers, sector);
+        for(Assign assign: assigns){
+            System.out.println("driver = " + assign.getDriver().getId());
+            for(Order order: assign.getOrders()){
+                System.out.println("order angle = "+order.getAngle());
             }
-            drivers.remove(driver);
-        } while (!orders.isEmpty());
+        }
+        System.out.println("**********************");
+        List<Assign> assigns2 =  assignService.StepByStepMinus(orders1, drivers1, sector);
+        for(Assign assign: assigns2){
+            System.out.println("driver = " + assign.getDriver().getId());
+            for(Order order: assign.getOrders()){
+                System.out.println("order angle = "+order.getAngle());
+            }
+        }
         return 1;
     }
 

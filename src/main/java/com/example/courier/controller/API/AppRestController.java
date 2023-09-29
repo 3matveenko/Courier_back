@@ -47,7 +47,7 @@ public class AppRestController {
                                         Input: {
                                           "login": "логин",
                                           "password": "пароль"} 
-                                          Output:{token}""")
+                                          Output:200""")
     @ApiResponse(responseCode = "200", description = "Успешная авторизация")
     @ApiResponse(responseCode = "400", description = "Ошибка json")
     @ApiResponse(responseCode = "403", description = "Такой логин не существует или не верный пароль")
@@ -57,10 +57,15 @@ public class AppRestController {
         try {
             return driverService.authorization(json);
         } catch (ForbiddenException e){
-            return ResponseEntity.status(505).body("Invalid authorization");
+            return ResponseEntity.status(403).body("Invalid authorization");
         } catch (JsonProcessingException e){
             return ResponseEntity.status(400).body("Bad request");
         }
 
     }
+
+
 }
+
+
+

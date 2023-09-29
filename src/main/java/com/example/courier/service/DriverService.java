@@ -35,6 +35,7 @@ public class DriverService {
             driver.setStatusDay(false);
             driver.setStatusOrder(false);
             driverRepository.save(driver);
+            System.out.println("ответ = "+ResponseEntity.ok(token));
             return ResponseEntity.ok(token);
         } else {
             throw new AuthoryException("505");
@@ -46,7 +47,7 @@ public class DriverService {
         Driver driver = objectMapper.readValue(json, Driver.class);
         Optional<Driver> driverOld = driverRepository.findByLogin(driver.getLogin());
         if(driverOld.isPresent()&&passwordEncoder.matches(driver.getPassword(), driverOld.get().getPassword())){
-            return ResponseEntity.ok(driverOld.get().getToken());
+            return ResponseEntity.ok("ok");
         } else {
             throw new ForbiddenException("Forbidden");
         }

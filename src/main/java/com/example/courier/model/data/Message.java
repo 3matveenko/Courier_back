@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewOrders {
+public class Message {
+
+    private String token;
 
     private String code;
 

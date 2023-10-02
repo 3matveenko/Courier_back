@@ -37,16 +37,16 @@ public class RabbitConfiguration {
         return new RabbitAdmin(connectionFactory());
     }
 
-    @Bean
-    public Queue myQueue(){
-        return new Queue("myQueue");
-    }
+//    @Bean
+//    public Queue myQueue(){
+//        return new Queue("back");
+//    }
 
-    @Bean
-    public SimpleMessageListenerContainer messageListenerContainer(){
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory());
-        container.setQueueNames("myQueue");
-        return container;
-    }
+//    @Bean
+//    public SimpleMessageListenerContainer messageListenerContainer(){
+//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory());
+//        container.setQueueNames("back");
+//        return container;
+//    }
 }

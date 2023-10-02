@@ -4,6 +4,7 @@ import com.example.courier.model.data.NewOrders;
 import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import jakarta.annotation.PostConstruct;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -15,6 +16,12 @@ public class RabbitService {
 
     private final RabbitTemplate rabbitTemplate;
     private final AmqpAdmin amqpAdmin;
+
+    @PostConstruct
+    public void init(){
+        createExchange("back");
+        createDriverQueue("back");
+    }
 
     @Autowired
     public RabbitService(RabbitTemplate rabbitTemplate, AmqpAdmin amqpAdmin) {

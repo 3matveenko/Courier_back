@@ -147,36 +147,35 @@
             iconAnchor: [16, 32], // Анкер иконки
             popupAnchor: [0, -25] // Анкер всплывающего окна (если оно открывается рядом с иконкой)
         });
-        // Инициализация карты
         var map = L.map('map').setView([43.238949, 76.889709], 13);
-        // Добавление слоя OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
-        // Добавление маркера
         L.marker([43.24404757763458, 76.8905757498524]).addTo(map)
             .bindPopup('Пятый элемент')
             .openPopup();
-        L.marker([43.24145741849453, 76.89485371811344], {icon: truckIcon}).addTo(map)
-            .bindPopup('Водитель Валераx')
-            .openPopup();
-        L.marker([43.156048, 76.822801], {icon: truckIcon}).addTo(map)
-            .bindPopup('Водитель Валераx')
-            .openPopup();
+        var drivers = [[${drivers}]]
+        if(drivers!==null){
+            for (var i = 0; i < drivers.length; i++) {
+                if(drivers[i].statusDay){
+                    var dateTime = new Date(drivers[i].lastUpdateLocation);
+                    var currentTime = new Date();
+                    var timeDifference = Math.floor((currentTime - dateTime) / 60000);
+                    L.marker([drivers[i].latitude, drivers[i].longitude], {icon: truckIcon}).addTo(map)
+                        .bindPopup(drivers[i].name)
+                        .bindPopup(drivers[i].name + '<br>обновлено: ' + timeDifference + ' мин. назад')
+                }
+            }
+        }
         var orders = [[${orders}]];
-
-        // Теперь у вас есть доступ к данным orders в JavaScript.
         if (orders !== null) {
-            // Вы можете работать с данными здесь, например, перебирать массив:
             for (var i = 0; i < orders.length; i++) {
                 if (orders[i].statusDelivery === 0) {
-                    var order = orders[i];
                     L.marker([orders[i].latitude, orders[i].longitude], {icon: dropIcon}).addTo(map)
                         .bindPopup('Клиент: ' + orders[i].current)
                         .openPopup();
                 }
                 if (orders[i].statusDelivery === 1) {
-                    var order = orders[i];
                     L.marker([orders[i].latitude, orders[i].longitude], {icon: drop2Icon}).addTo(map)
                         .bindPopup('Клиент: ' + orders[i].current)
                         .openPopup();

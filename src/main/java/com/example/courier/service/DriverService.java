@@ -1,11 +1,14 @@
 package com.example.courier.service;
 
 import com.example.courier.model.Driver;
+import com.example.courier.model.data.Location;
+import com.example.courier.model.data.Message;
 import com.example.courier.model.exception.AuthoryException;
 import com.example.courier.model.exception.ForbiddenException;
 import com.example.courier.repository.DriverRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -81,4 +84,17 @@ public class DriverService {
         driverRepository.save(driver);
     }
 
+    public Driver findDriverByToken(String token){
+        return driverRepository.findByToken(token).orElseThrow();
+    }
+    public void getLocation(Message message){
+        Gson gson = new Gson();
+        Location location = gson.fromJson(message.getBody(), Location.class);
+        Driver driver = findDriverByToken(message.getToken());
+        driver.setLastUpdateLocation(new Date(message.getMillisecondsSinceEpoch()));
+        driver.setLatitude(location.getLatitude());
+        driver.setLongitude(location.getLongitude());
+        save(driver);
+
+    }
 }

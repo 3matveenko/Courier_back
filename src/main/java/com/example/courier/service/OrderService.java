@@ -3,7 +3,7 @@ package com.example.courier.service;
 import com.example.courier.model.Assign;
 import com.example.courier.model.Driver;
 import com.example.courier.model.Order;
-import com.example.courier.model.data.NewOrders;
+import com.example.courier.model.data.Message;
 import com.example.courier.model.exception.DriversIsEmptyException;
 import com.example.courier.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,7 +40,7 @@ public class OrderService {
 
     static Timer timer;
 
-    static List<Assign> DBassigns = new ArrayList<>();
+    static List<Assign> DBAssigns = new ArrayList<>();
 
     public void newOrder(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -162,13 +162,22 @@ public class OrderService {
     public void changeOrders(List<Assign> assigns){
         List<Driver> drivers = getFreeDrivers();
         for(Assign assign: assigns){
-            DBassigns.add(new Assign(drivers.get(assigns.indexOf(assign)),assign.getOrders()));
+            DBAssigns.add(new Assign(drivers.get(assigns.indexOf(assign)),assign.getOrders()));
             Gson gson = new Gson();
             String body = gson.toJson(assign.getOrders());
-            NewOrders newOrders = new NewOrders("new_order", System.currentTimeMillis(), body);
+            Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
             rabbitService.sendMessage(drivers.get(assigns.indexOf(assign)).getToken(),gson.toJson(newOrders));
             drivers.get(assigns.indexOf(assign));
             assign.getOrders();
+        }
+    }
+
+    public void acceptOrders(String token){
+        Driver driver = driverService.findDriverByToken(token);
+        for (int i = DBAssigns.size(); true; i--) {
+            if(DBAssigns.get(i).getDriver().equals(driver)){
+                DBAssigns.remove(i);
+            }
         }
     }
 }

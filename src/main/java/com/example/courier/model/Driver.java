@@ -1,5 +1,6 @@
 package com.example.courier.model;
 
+import com.zaxxer.hikari.util.ClockSource;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,6 +59,15 @@ public class Driver{
     @Column(name="longitude")
     private double longitude;
 
+    /**
+     * Время установки статуса "cвободен"
+     */
     @Column(name = "time_free")
     private Date timeFree;
+
+    /**
+     * Время отправки координат
+     */
+    @Column(name = "last_update_location")
+    private Date lastUpdateLocation;
 }

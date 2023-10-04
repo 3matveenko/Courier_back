@@ -16,4 +16,6 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
 
     List<Driver> findAllByStatusOrder(Boolean status);
 
+    Optional<Driver> findByToken(String token);
+
 }

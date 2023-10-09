@@ -28,6 +28,9 @@ public class DriverService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    RabbitService rabbitService;
+
     public ResponseEntity<String> create(String json) throws AuthoryException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Driver driver = objectMapper.readValue(json, Driver.class);
@@ -35,6 +38,8 @@ public class DriverService {
             String token = UUID.randomUUID().toString();
             driver.setPassword(passwordEncoder.encode(driver.getPassword()));
             driver.setToken(token);
+            rabbitService.createDriverQueue(token);
+            rabbitService.createExchange(token);
             driver.setStatusDay(false);
             driver.setStatusOrder(false);
             driverRepository.save(driver);

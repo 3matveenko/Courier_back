@@ -40,7 +40,7 @@ public class OrderService {
 
     static Timer timer;
 
-    static List<Assign> DBAssigns = new ArrayList<>();
+    static List<Assign> dbAssigns = new ArrayList<>();
 
     public void newOrder(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -53,11 +53,9 @@ public class OrderService {
     }
 
     public List<Order> getOrderItWork() {
-//        rabbitService.createExchange("Driver0");
-//        rabbitService.createDriverQueue("Driver0");
 //        rabbitService.deleteExchange("Driver000");
 //        rabbitService.deleteQueue("Driver000");
-        rabbitService.sendMessage("Driver0","Отправленное сообщение");
+  //      rabbitService.sendMessage("Driver0","Отправленное сообщение");
         return orderRepository.findByStatusDeliveryBetween(0, 1);
     }
 
@@ -98,6 +96,7 @@ public class OrderService {
                 @Override
                 public void run() {
                     try {
+
                         settingService.setTimeInDb("none");
                         timer.cancel();
                         changeOrders(appointmentDriverAuto());
@@ -162,21 +161,50 @@ public class OrderService {
     public void changeOrders(List<Assign> assigns){
         List<Driver> drivers = getFreeDrivers();
         for(Assign assign: assigns){
-            DBAssigns.add(new Assign(drivers.get(assigns.indexOf(assign)),assign.getOrders()));
+            dbAssigns.add(new Assign(drivers.get(assigns.indexOf(assign)),assign.getOrders()));
             Gson gson = new Gson();
             String body = gson.toJson(assign.getOrders());
             Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
             rabbitService.sendMessage(drivers.get(assigns.indexOf(assign)).getToken(),gson.toJson(newOrders));
-            drivers.get(assigns.indexOf(assign));
-            assign.getOrders();
+        }
+        setTimeResponse();
+    }
+
+    /**
+     * Установка таймера для того, чтобы дождаться ответа от водителей о принятии заказа
+     */
+    public void setTimeResponse(){
+        System.out.println("setTimeResponse = "+new Date());
+        Timer timeResponse = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                checkingResponseFromDriver();
+            }
+        };
+        timeResponse.schedule(task,  60000);
+    }
+    public void acceptOrders(String token){
+        Driver driver = driverService.findDriverByToken(token);
+        for (int i = dbAssigns.size(); true; i--) {
+            if(dbAssigns.get(i).getDriver().equals(driver)){
+                dbAssigns.remove(i);
+            }
         }
     }
 
-    public void acceptOrders(String token){
-        Driver driver = driverService.findDriverByToken(token);
-        for (int i = DBAssigns.size(); true; i--) {
-            if(DBAssigns.get(i).getDriver().equals(driver)){
-                DBAssigns.remove(i);
+    public void checkingResponseFromDriver(){
+        if(!dbAssigns.isEmpty()){
+            for (Assign assign: dbAssigns){
+                assign.getDriver().setTimeFree(new Date());
+                driverService.save(assign.getDriver());
+            }
+            dbAssigns.clear();
+            try{
+                changeOrders(appointmentDriverAuto());
+            } catch (DriversIsEmptyException e){
+                timer.cancel();
+                newTimer(2);
             }
         }
     }

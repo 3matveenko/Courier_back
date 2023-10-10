@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,11 @@ public class OrderService {
     static Timer timer;
 
     static List<Assign> dbAssigns = new ArrayList<>();
+
+    static Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            .setPrettyPrinting()
+            .create();
 
     public void newOrder(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -162,7 +168,6 @@ public class OrderService {
         List<Driver> drivers = getFreeDrivers();
         for(Assign assign: assigns){
             dbAssigns.add(new Assign(drivers.get(assigns.indexOf(assign)),assign.getOrders()));
-            Gson gson = new Gson();
             String body = gson.toJson(assign.getOrders());
             Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
             rabbitService.sendMessage(drivers.get(assigns.indexOf(assign)).getToken(),gson.toJson(newOrders));
@@ -186,8 +191,13 @@ public class OrderService {
     }
     public void acceptOrders(String token){
         Driver driver = driverService.findDriverByToken(token);
-        for (int i = dbAssigns.size(); true; i--) {
-            if(dbAssigns.get(i).getDriver().equals(driver)){
+        for (int i = dbAssigns.size()-1; i>=0; i--) {
+            if(dbAssigns.get(i).getDriver().getId().equals(driver.getId())){
+                for (Order order: dbAssigns.get(i).getOrders()){
+                    order.setStatusDelivery(1);
+                    order.setDriver(driver);
+                    save(order);
+                }
                 dbAssigns.remove(i);
             }
         }
@@ -207,5 +217,11 @@ public class OrderService {
                 newTimer(2);
             }
         }
+    }
+
+    public void getOrderStatusProcessingByToken(String token){
+        String body = gson.toJson(orderRepository.findByStatusDeliveryAndDriver(1,driverService.findDriverByToken(token)));
+        Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
+        rabbitService.sendMessage(token, gson.toJson(newOrders));
     }
 }

@@ -128,15 +128,12 @@ public class OrderService {
         }
         orders.sort(Comparator.comparing(Order::getAngle));
         drivers.sort(Comparator.comparing(Driver::getTimeFree));
-        List<Order> orders1 = new ArrayList<>(orders);
-        List<Driver> drivers1 = new ArrayList<>(drivers);
-        List<Order> orders2 = new ArrayList<>(orders);
-        List<Driver> drivers2 = new ArrayList<>(drivers);
 
         List<List<Assign>> lists = new ArrayList<>();
+
         lists.add(assignService.StepByStepPlus(orders, drivers, sector));
-        lists.add(assignService.StepByStepMinus(orders1, drivers1, sector));
-        lists.add(assignService.getTheBest(orders2, drivers2, sector));
+        lists.add(assignService.StepByStepMinus(new ArrayList<>(orders), new ArrayList<>(drivers), sector));
+        lists.add(assignService.getTheBest(new ArrayList<>(orders), new ArrayList<>(drivers), sector));
 
         lists.sort(Comparator.comparing(List<Assign>::size));
         return lists.get(0);
@@ -221,7 +218,7 @@ public class OrderService {
 
     public void getOrderStatusProcessingByToken(String token){
         String body = gson.toJson(orderRepository.findByStatusDeliveryAndDriver(1,driverService.findDriverByToken(token)));
-        Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
+        Message newOrders = new Message("","get_my_orders_status_progressing", System.currentTimeMillis(), body);
         rabbitService.sendMessage(token, gson.toJson(newOrders));
     }
 }

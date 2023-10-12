@@ -129,11 +129,17 @@ public class OrderService {
         orders.sort(Comparator.comparing(Order::getAngle));
         drivers.sort(Comparator.comparing(Driver::getTimeFree));
 
+        List<Order> orders1 = new ArrayList<>(orders);
+        List<Driver> drivers1 = new ArrayList<>(drivers);
+
+        List<Order> orders2 = new ArrayList<>(orders);
+        List<Driver> drivers2 = new ArrayList<>(drivers);
+
         List<List<Assign>> lists = new ArrayList<>();
 
         lists.add(assignService.StepByStepPlus(orders, drivers, sector));
-        lists.add(assignService.StepByStepMinus(new ArrayList<>(orders), new ArrayList<>(drivers), sector));
-        lists.add(assignService.getTheBest(new ArrayList<>(orders), new ArrayList<>(drivers), sector));
+        lists.add(assignService.StepByStepMinus(orders1,drivers1, sector));
+        lists.add(assignService.getTheBest(orders2, drivers2, sector));
 
         lists.sort(Comparator.comparing(List<Assign>::size));
         return lists.get(0);
@@ -164,8 +170,12 @@ public class OrderService {
     public void changeOrders(List<Assign> assigns){
         List<Driver> drivers = getFreeDrivers();
         for(Assign assign: assigns){
+            List<Order> orders;
             dbAssigns.add(new Assign(drivers.get(assigns.indexOf(assign)),assign.getOrders()));
-            String body = gson.toJson(assign.getOrders());
+            orders = orderRepository.findByStatusDeliveryAndDriver(1,drivers.get(assigns.indexOf(assign)));
+            List<Order> list = assign.getOrders();
+            orders.addAll(list);
+            String body = gson.toJson(orders);
             Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
             rabbitService.sendMessage(drivers.get(assigns.indexOf(assign)).getToken(),gson.toJson(newOrders));
         }

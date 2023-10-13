@@ -72,13 +72,16 @@ public class AppRestController {
     @PostMapping("/status_day")
     public ResponseEntity<String> statusDay(
             @RequestHeader("Authorization") String authorizationHeader,
+            @RequestHeader("Flag") String flagString,
             @RequestBody String json
     ){
         Gson gson = new Gson();
         Message message = gson.fromJson(json, Message.class);
     if(appToken.equals(authorizationHeader)){
         try {
-            if (driverService.getStatusDayByToken(message.getToken())){
+            boolean flag;
+            flag = "true".equals(flagString);
+            if (driverService.getStatusDayByToken(message.getToken(),flag)){
                 return ResponseEntity.status(200).body("true");
             } else {
                 return ResponseEntity.status(200).body("false");
@@ -91,6 +94,7 @@ public class AppRestController {
         return ResponseEntity.status(403).body("");
     }
     }
+
 }
 
 

@@ -31,6 +31,9 @@ public class DriverService {
     @Autowired
     RabbitService rabbitService;
 
+    @Autowired
+    AssignService assignService;
+
     public ResponseEntity<String> create(String json) throws AuthoryException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Driver driver = objectMapper.readValue(json, Driver.class);
@@ -99,9 +102,11 @@ public class DriverService {
         driver.setLastUpdateLocation(new Date(message.getMillisecondsSinceEpoch()));
         driver.setLatitude(location.getLatitude());
         driver.setLongitude(location.getLongitude());
+        assignService.checkAssignStatus(driver);
         save(driver);
 
     }
+
 
     public Boolean getStatusDayByToken(String token, Boolean flag) throws AuthoryException{
         Optional<Driver> optional = driverRepository.findByToken(token);

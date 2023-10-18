@@ -171,7 +171,10 @@ public class OrderService {
         List<Driver> drivers = getFreeDrivers();
         for(Assign assign: assigns){
             List<Order> orders;
-            dbAssigns.add(new Assign(drivers.get(assigns.indexOf(assign)),assign.getOrders()));
+            Assign assignNew = new Assign();
+            assignNew.setDriver(drivers.get(assigns.indexOf(assign)));
+            assignNew.setOrders(assign.getOrders());
+            dbAssigns.add(assignNew);
             orders = orderRepository.findByStatusDeliveryAndDriver(1,drivers.get(assigns.indexOf(assign)));
             List<Order> list = assign.getOrders();
             orders.addAll(list);
@@ -204,7 +207,9 @@ public class OrderService {
                     order.setStatusDelivery(1);
                     order.setDriver(driver);
                     save(order);
+
                 }
+                dbAssigns.get(i).setTimeStart(new Date());
                 dbAssigns.remove(i);
             }
         }
@@ -231,4 +236,6 @@ public class OrderService {
         Message newOrders = new Message("","get_my_orders_status_progressing", System.currentTimeMillis(), body);
         rabbitService.sendMessage(token, gson.toJson(newOrders));
     }
+
+
 }

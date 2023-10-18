@@ -29,6 +29,7 @@ public class RabbitListener {
             }
             case("location")-> driverService.getLocation(message);
             case("get_my_orders_status_progressing")->orderService.getOrderStatusProcessingByToken(message.getToken());
+            case("order_success")->
         }
     }
 }

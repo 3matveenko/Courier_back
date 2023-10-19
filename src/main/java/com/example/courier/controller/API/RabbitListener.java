@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class RabbitListener {
 
@@ -28,8 +30,16 @@ public class RabbitListener {
                 }
             }
             case("location")-> driverService.getLocation(message);
-            case("get_my_orders_status_progressing")->orderService.getOrderStatusProcessingByToken(message.getToken());
-            case("order_success")->
+            case("get_my_orders_status_progressing")->{
+                orderService.getOrderStatusProcessingByToken(message.getToken());
+                System.out.println("get_my_orders_status_progressing = "+System.currentTimeMillis());
+            }
+
+            case("order_success")->{
+                orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()));
+                orderService.getOrderStatusProcessingByToken(message.getToken());
+                System.out.println("order_success = "+System.currentTimeMillis());
+            }
         }
     }
 }

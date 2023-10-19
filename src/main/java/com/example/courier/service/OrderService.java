@@ -237,5 +237,11 @@ public class OrderService {
         rabbitService.sendMessage(token, gson.toJson(newOrders));
     }
 
+    public void changeStatusDeliveryToComplete(Long _id){
+        Order order = orderRepository.findById(_id).orElseThrow();
+        order.setStatusDelivery(2);
+        order.setDateEnd(new Date());
+        save(order);
+    }
 
 }

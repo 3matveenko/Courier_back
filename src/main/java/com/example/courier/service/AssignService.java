@@ -23,16 +23,7 @@ public class AssignService {
      * дисстанция 0,0035 = примерно 400м.
      */
     public static double dist = 0.0035;
-    public void checkAssignStatus(Driver _driver){
-        double feLat = Double.parseDouble(settingService.getValueByKey("fe_latitude"));
-        double feLong = Double.parseDouble(settingService.getValueByKey("fe_longtitude"));
-        if( _driver.getLatitude()>(feLat-dist)
-                &&_driver.getLatitude()<(feLat+dist)
-                &&_driver.getLongitude()>(feLong-dist)
-                &&_driver.getLongitude()<(feLong+dist)){
 
-        }
-    }
     public void checkAssignStatus(Driver _driver){
         double feLat = Double.parseDouble(settingService.getValueByKey("fe_latitude"));
         double feLong = Double.parseDouble(settingService.getValueByKey("fe_longtitude"));

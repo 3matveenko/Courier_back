@@ -29,7 +29,7 @@ public class Assign {
     @OneToMany
     private List<Order> orders;
 
-    @Column(name = "time_open")
+    @Column(name = "time_start")
     private Date timeStart;
 
     @Column(name = "time_open")

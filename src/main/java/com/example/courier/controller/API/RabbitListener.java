@@ -19,26 +19,26 @@ public class RabbitListener {
     OrderService orderService;
 
     @org.springframework.amqp.rabbit.annotation.RabbitListener(queues = "back")
-    public void getMessage(String json){
+    public void getMessage(String json) {
         Gson gson = new Gson();
         Message message = gson.fromJson(json, Message.class);
 
-        switch (message.getCode()){
+        switch (message.getCode()) {
             case ("accept_order") -> {
-                if(message.getMillisecondsSinceEpoch()+60000>System.currentTimeMillis()){
+                if (message.getMillisecondsSinceEpoch() + 60000 > System.currentTimeMillis()) {
                     orderService.acceptOrders(message.getToken());
                 }
             }
-            case("location")-> driverService.getLocation(message);
-            case("get_my_orders_status_progressing")->{
+            case ("location") -> driverService.getLocation(message);
+            case ("get_my_orders_status_progressing") -> {
                 orderService.getOrderStatusProcessingByToken(message.getToken());
-                System.out.println("get_my_orders_status_progressing = "+System.currentTimeMillis());
+                System.out.println("get_my_orders_status_progressing = " + System.currentTimeMillis());
             }
 
-            case("order_success")->{
+            case ("order_success") -> {
                 orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()));
                 orderService.getOrderStatusProcessingByToken(message.getToken());
-                System.out.println("order_success = "+System.currentTimeMillis());
+                System.out.println("order_success = " + System.currentTimeMillis());
             }
         }
     }

@@ -24,12 +24,13 @@ public class AppRestController {
 
     @Autowired
     DriverService driverService;
-    @Operation(summary = "регистрация", description =  """
-                                        Input: {
-                                        "login": "логин",
-                                        "password": "пароль",
-                                        "name": "пароль",
-                                        } Output:{token}""")
+
+    @Operation(summary = "регистрация", description = """
+            Input: {
+            "login": "логин",
+            "password": "пароль",
+            "name": "пароль",
+            } Output:{token}""")
     @ApiResponse(responseCode = "200", description = "Успешная регистрация")
     @ApiResponse(responseCode = "400", description = "Ошибка json")
     @ApiResponse(responseCode = "505", description = "Такой логин существует")
@@ -38,19 +39,19 @@ public class AppRestController {
             @RequestBody String json) throws JsonProcessingException {
         try {
             return driverService.create(json);
-        } catch (AuthoryException e){
+        } catch (AuthoryException e) {
             return ResponseEntity.status(505).body("Invalid login");
-        } catch (JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             return ResponseEntity.status(400).body("Bad request");
         }
 
     }
 
     @Operation(summary = "авторизация", description = """
-                                        Input: {
-                                          "login": "логин",
-                                          "password": "пароль"} 
-                                          Output:200""")
+            Input: {
+              "login": "логин",
+              "password": "пароль"} 
+              Output:200""")
     @ApiResponse(responseCode = "200", description = "Успешная авторизация")
     @ApiResponse(responseCode = "400", description = "Ошибка json")
     @ApiResponse(responseCode = "403", description = "Такой логин не существует или не верный пароль")
@@ -59,9 +60,9 @@ public class AppRestController {
             @RequestBody String json) {
         try {
             return driverService.authorization(json);
-        } catch (ForbiddenException e){
+        } catch (ForbiddenException e) {
             return ResponseEntity.status(403).body("Invalid authorization");
-        } catch (JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             return ResponseEntity.status(400).body("Bad request");
         }
 
@@ -73,25 +74,24 @@ public class AppRestController {
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestHeader("Flag") String flagString,
             @RequestBody String json
-    ){
+    ) {
         Gson gson = new Gson();
         Message message = gson.fromJson(json, Message.class);
-    if(appToken.equals(authorizationHeader)){
-        try {
-            boolean flag;
-            flag = "true".equals(flagString);
-            if (driverService.getStatusDayByToken(message.getToken(),flag)){
-                return ResponseEntity.status(200).body("true");
-            } else {
-                return ResponseEntity.status(200).body("false");
+        if (appToken.equals(authorizationHeader)) {
+            try {
+                boolean flag;
+                flag = "true".equals(flagString);
+                if (driverService.getStatusOrderByToken(message.getToken(), flag)) {
+                    return ResponseEntity.status(200).body("true");
+                } else {
+                    return ResponseEntity.status(200).body("false");
+                }
+            } catch (AuthoryException e) {
+                return ResponseEntity.status(403).body("");
             }
-        } catch (AuthoryException e){
+        } else {
             return ResponseEntity.status(403).body("");
         }
-
-    } else {
-        return ResponseEntity.status(403).body("");
-    }
     }
 
 }

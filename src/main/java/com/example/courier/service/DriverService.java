@@ -108,15 +108,15 @@ public class DriverService {
     }
 
 
-    public Boolean getStatusDayByToken(String token, Boolean flag) throws AuthoryException{
+    public Boolean getStatusOrderByToken(String token, Boolean flag) throws AuthoryException{
         Optional<Driver> optional = driverRepository.findByToken(token);
         if(optional.isPresent()){
             Driver driver = optional.get();
             if(flag){
-                driver.setStatusDay(!driver.isStatusDay());
+                driver.setStatusOrder(!driver.isStatusOrder());
                 save(driver);
             }
-           return driver.isStatusDay();
+           return driver.isStatusOrder();
         } else {
             throw new AuthoryException("invalid token");
         }

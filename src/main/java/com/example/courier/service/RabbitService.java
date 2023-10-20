@@ -28,6 +28,7 @@ public class RabbitService {
     }
 
     public void sendMessage(String token, String message) {
+        System.out.println("сообщение рэббит отправлено = " + System.currentTimeMillis()+" \n текст = "+message);
         rabbitTemplate.convertAndSend(token, message);
     }
 

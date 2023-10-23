@@ -1,5 +1,6 @@
 package com.example.courier.controller;
 
+import com.example.courier.model.Setting;
 import com.example.courier.model.User;
 import com.example.courier.service.DriverService;
 import com.example.courier.service.OrderService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 @Controller
 public class MainController {
@@ -92,7 +94,11 @@ public class MainController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/settings")
-    public String settings(){
+    public String settings(Model model){
+
+        model.addAttribute("crm_token", Setting crm_token);
+
+
         return "settings/settings";
     }
 }

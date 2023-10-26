@@ -50,7 +50,6 @@ public class CrmRestController {
             @RequestBody String json,
             @RequestHeader("Authorization") String token) throws JsonProcessingException {
         try {
-System.out.println("итоговый угол = "+locationService.angleBetweenVerticalAndPoint(43.244487157876925, 76.88878579396281));
             orderService.newTimer(1);//добавить проверку на то существует таймер или нет
             securityService.crmSecurity(token);
             orderService.newOrder(json);

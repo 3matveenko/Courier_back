@@ -2,8 +2,10 @@ package com.example.courier.controller;
 
 import com.example.courier.model.Setting;
 import com.example.courier.model.User;
+import com.example.courier.model.data.AllSettings;
 import com.example.courier.service.DriverService;
 import com.example.courier.service.OrderService;
+import com.example.courier.service.SettingService;
 import com.example.courier.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class MainController {
 
     @Autowired
     DriverService driverService;
+
+    @Autowired
+    SettingService settingService;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/")
@@ -95,10 +100,7 @@ public class MainController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/settings")
     public String settings(Model model){
-
-        model.addAttribute("crm_token", Setting crm_token);
-
-
+        model.addAttribute("allSettings", settingService.collectingSettings());
         return "settings/settings";
     }
 }

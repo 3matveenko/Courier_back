@@ -38,6 +38,9 @@ public class OrderService {
     @Autowired
     RabbitService rabbitService;
 
+    @Autowired
+    RejectOrderService rejectOrderService;
+
 
     static Timer timer;
 
@@ -74,7 +77,7 @@ public class OrderService {
     public void newTimer(int flag) {
         switch (flag){
             case 0:
-                settingService.setTimeInDb("none");
+                settingService.setTimerStartTime("none");
                 timer.cancel();
                 break;
             case 1:
@@ -84,7 +87,7 @@ public class OrderService {
                     public void run() {
                         try {
                             changeOrders(appointmentDriverAuto());
-                            settingService.setTimeInDb("none");
+                            settingService.setTimerStartTime("none");
                             timer.cancel();
                         } catch (DriversIsEmptyException e){
                             timer.cancel();
@@ -93,7 +96,7 @@ public class OrderService {
 
                     }
                 };
-                settingService.setTimeInDb(new SimpleDateFormat("HH:mm").format(new Date()));
+                settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
                 timer.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum")) * 60 * 1000);
                 break;
             case 2:
@@ -103,7 +106,7 @@ public class OrderService {
                 public void run() {
                     try {
 
-                        settingService.setTimeInDb("none");
+                        settingService.setTimerStartTime("none");
                         timer.cancel();
                         changeOrders(appointmentDriverAuto());
                     } catch (DriversIsEmptyException e){
@@ -112,7 +115,7 @@ public class OrderService {
                     }
                 }
                 };
-                settingService.setTimeInDb(new SimpleDateFormat("HH:mm").format(new Date()));
+                settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
                 timer.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum_nodriver")) * 60 * 1000);
                 break;
         }
@@ -243,5 +246,7 @@ public class OrderService {
         order.setDateEnd(new Date());
         save(order);
     }
+
+    public void RejectingOrder()
 
 }

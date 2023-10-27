@@ -1,5 +1,6 @@
 package com.example.courier.service;
 
+import com.example.courier.model.Setting;
 import com.example.courier.model.data.AllSettings;
 import com.example.courier.model.exception.TimeException;
 import com.example.courier.repository.SettingRepository;
@@ -12,8 +13,14 @@ public class SettingService {
     @Autowired
     SettingRepository settingRepository;
 
-    public void setTimeInDb(String time){
-        settingRepository.findByKey("timer_start_time").orElseThrow().setValue(time);
+    public void setTimerStartTime(String time){
+        saveValueByKey("timer_start_time",time);
+    }
+
+    public void saveValueByKey(String _key, String _value){
+        Setting setting = settingRepository.findByKey(_key).orElseThrow();
+        setting.setValue(_value);
+        settingRepository.save(setting);
     }
 
     public String getValueByKey(String key){
@@ -28,25 +35,45 @@ public class SettingService {
             return time;
         }
     }
+
+
     public AllSettings collectingSettings(){
         return new AllSettings(
-                settingRepository.findByKey("crm_token").orElseThrow().getValue(),
-                settingRepository.findByKey("timer_sum").orElseThrow().getValue(),
-                settingRepository.findByKey("timer_start_time").orElseThrow().getValue(),
-                settingRepository.findByKey("angle").orElseThrow().getValue(),
-                settingRepository.findByKey("timer_sum_nodriver").orElseThrow().getValue(),
-                settingRepository.findByKey("fe_latitude").orElseThrow().getValue(),
-                settingRepository.findByKey("fe_longtitude").orElseThrow().getValue(),
-                settingRepository.findByKey("protocol").orElseThrow().getValue(),
-                settingRepository.findByKey("server_name").orElseThrow().getValue(),
-                settingRepository.findByKey("server_port").orElseThrow().getValue(),
-                settingRepository.findByKey("back_queue_name").orElseThrow().getValue(),
-                settingRepository.findByKey("rabbit_server_name").orElseThrow().getValue(),
-                settingRepository.findByKey("rabbit_server_port").orElseThrow().getValue(),
-                settingRepository.findByKey("rabbit_username").orElseThrow().getValue(),
-                settingRepository.findByKey("rabbit_password").orElseThrow().getValue(),
-                settingRepository.findByKey("order_distribution_principle").orElseThrow().getValue(),
-                settingRepository.findByKey("beginning_work").orElseThrow().getValue()
+                getValueByKey("crm_token"),
+                getValueByKey("timer_sum"),
+                getValueByKey("timer_start_time"),
+                getValueByKey("angle"),
+                getValueByKey("timer_sum_nodriver"),
+                getValueByKey("fe_latitude"),
+                getValueByKey("fe_longtitude"),
+                getValueByKey("protocol"),
+                getValueByKey("server_name"),
+                getValueByKey("server_port"),
+                getValueByKey("back_queue_name"),
+                getValueByKey("rabbit_server_name"),
+                getValueByKey("rabbit_server_port"),
+                getValueByKey("rabbit_username"),
+                getValueByKey("rabbit_password"),
+                getValueByKey("order_distribution_principle"),
+                getValueByKey("beginning_work")
         );
+    }
+
+    public void updatingSettings(AllSettings allSettings){
+        saveValueByKey("timer_sum",allSettings.timerSum);
+        saveValueByKey("timer_start_time",allSettings.timerStartTime);
+        saveValueByKey("angle",allSettings.angle);
+        saveValueByKey("timer_sum_nodriver",allSettings.timerSumNodriver);
+        saveValueByKey("fe_latitude",allSettings.feLatitude);
+        saveValueByKey("fe_longtitude",allSettings.feLongtitude);
+        saveValueByKey("protocol",allSettings.protocol);
+        saveValueByKey("server_name",allSettings.serverName);
+        saveValueByKey("server_port",allSettings.serverPort);
+        saveValueByKey("rabbit_server_name",allSettings.rabbitServerName);
+        saveValueByKey("rabbit_server_port",allSettings.rabbitServerPort);
+        saveValueByKey("rabbit_username",allSettings.rabbitUsername);
+        saveValueByKey("rabbit_password",allSettings.rabbitPassword);
+        saveValueByKey("order_distribution_principle",allSettings.orderDistributionPrinciple);
+        saveValueByKey("beginning_work",allSettings.beginningWork);
     }
 }

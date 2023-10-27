@@ -14,10 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -101,6 +98,17 @@ public class MainController {
     @GetMapping(value = "/settings")
     public String settings(Model model){
         model.addAttribute("allSettings", settingService.collectingSettings());
+        return "settings/settings";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/save_settings")
+    public String savingSettings(
+            @ModelAttribute AllSettings allSettings,
+            Model model){
+        settingService.updatingSettings(allSettings);
+        model.addAttribute("allSettings", settingService.collectingSettings());
+        model.addAttribute("flagSave",true);
         return "settings/settings";
     }
 }

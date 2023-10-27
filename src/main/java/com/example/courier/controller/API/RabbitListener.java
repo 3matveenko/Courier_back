@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.NoSuchElementException;
 
 @Component
 public class RabbitListener {
@@ -22,24 +23,28 @@ public class RabbitListener {
     public void getMessage(String json) {
         Gson gson = new Gson();
         Message message = gson.fromJson(json, Message.class);
+        try {
+            switch (message.getCode()) {
+                case ("accept_order") -> {
+                    if (message.getMillisecondsSinceEpoch() + 60000 > System.currentTimeMillis()) {
+                        orderService.acceptOrders(message.getToken());
+                    }
+                }
+                case ("location") -> driverService.getLocation(message);
+                case ("get_my_orders_status_progressing") -> {
+                    orderService.getOrderStatusProcessingByToken(message.getToken());
+                }
 
-        switch (message.getCode()) {
-            case ("accept_order") -> {
-                if (message.getMillisecondsSinceEpoch() + 60000 > System.currentTimeMillis()) {
-                    orderService.acceptOrders(message.getToken());
+                case ("order_success") -> {
+                    orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()));
+                    orderService.getOrderStatusProcessingByToken(message.getToken());
+                }
+                case ("reject_order")->{
+                    orderService.
                 }
             }
-            case ("location") -> driverService.getLocation(message);
-            case ("get_my_orders_status_progressing") -> {
-                orderService.getOrderStatusProcessingByToken(message.getToken());
-                System.out.println("get_my_orders_status_progressing = " + System.currentTimeMillis());
-            }
+        } catch (NoSuchElementException e){
 
-            case ("order_success") -> {
-                orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()));
-                orderService.getOrderStatusProcessingByToken(message.getToken());
-                System.out.println("order_success = " + System.currentTimeMillis());
-            }
         }
     }
 }

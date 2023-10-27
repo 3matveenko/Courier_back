@@ -66,4 +66,6 @@ public class Order{
     @Column(name = "angle")
     private Double angle;
 
+    @OneToOne
+    private RejectOrder rejectOrder;
 }

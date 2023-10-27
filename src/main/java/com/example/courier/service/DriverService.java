@@ -58,7 +58,7 @@ public class DriverService {
         Driver driver = objectMapper.readValue(json, Driver.class);
         Optional<Driver> driverOld = driverRepository.findByLogin(driver.getLogin());
         if(driverOld.isPresent()&&passwordEncoder.matches(driver.getPassword(), driverOld.get().getPassword())){
-            return ResponseEntity.ok("ok");
+            return ResponseEntity.ok(driverOld.get().getToken());
         } else {
             throw new ForbiddenException("Forbidden");
         }

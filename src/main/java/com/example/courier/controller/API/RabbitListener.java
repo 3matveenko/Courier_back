@@ -3,6 +3,7 @@ package com.example.courier.controller.API;
 import com.example.courier.model.data.Message;
 import com.example.courier.service.DriverService;
 import com.example.courier.service.OrderService;
+import com.example.courier.service.RabbitService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ public class RabbitListener {
     @Autowired
     OrderService orderService;
 
+    @Autowired
+    RabbitService rabbitService;
+
     @org.springframework.amqp.rabbit.annotation.RabbitListener(queues = "back")
     public void getMessage(String json) {
         Gson gson = new Gson();
@@ -32,7 +36,7 @@ public class RabbitListener {
                 }
                 case ("location") -> driverService.getLocation(message);
                 case ("get_my_orders_status_progressing") -> {
-                    orderService.getOrderStatusProcessingByToken(message.getToken());
+                    rabbitService.getOrderStatusProcessingByToken(message.getToken());
                 }
 
                 case ("order_success") -> {
@@ -40,7 +44,7 @@ public class RabbitListener {
                     orderService.getOrderStatusProcessingByToken(message.getToken());
                 }
                 case ("reject_order")->{
-                    orderService.
+                    orderService.rejectingOrder(message);
                 }
             }
         } catch (NoSuchElementException e){

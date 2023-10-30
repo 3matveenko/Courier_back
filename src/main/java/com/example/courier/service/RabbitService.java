@@ -1,5 +1,8 @@
 package com.example.courier.service;
 
+import com.example.courier.model.data.Message;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import jakarta.annotation.PostConstruct;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.DirectExchange;
@@ -11,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RabbitService {
-
+    static Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            .setPrettyPrinting()
+            .create();
     private final RabbitTemplate rabbitTemplate;
     private final AmqpAdmin amqpAdmin;
 
@@ -27,6 +33,9 @@ public class RabbitService {
         this.amqpAdmin = amqpAdmin;
     }
 
+    @Autowired
+    OrderService orderService;
+
     public void sendMessage(String token, String message) {
         System.out.println("сообщение рэббит отправлено = " + System.currentTimeMillis()+" \n текст = "+message);
         rabbitTemplate.convertAndSend(token, message);
@@ -41,6 +50,12 @@ public class RabbitService {
         Queue queue = new Queue(driverName);
         amqpAdmin.declareQueue(queue);
     }
+    public void getOrderStatusProcessingByToken(String token){
+        String body = gson.toJson(orderService.getOrderStatusProcessingByToken(token));
+        Message newOrders = new Message("","get_my_orders_status_progressing", System.currentTimeMillis(), body);
+        sendMessage(token, gson.toJson(newOrders));
+    }
+
 
     public void deleteExchange(String exchangeName) {
         amqpAdmin.deleteExchange(exchangeName);

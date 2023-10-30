@@ -34,6 +34,9 @@ public class DriverService {
     @Autowired
     AssignService assignService;
 
+    public List<Driver> getFreeDrivers(){
+        return getAllByStatusOrder(true);
+    }
     public ResponseEntity<String> create(String json) throws AuthoryException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Driver driver = objectMapper.readValue(json, Driver.class);
@@ -84,7 +87,7 @@ public class DriverService {
         driverRepository.delete(driverRepository.findById(driverId).orElseThrow());
     }
 
-    public List<Driver> findAllByStatusOrder(Boolean status){
+    public List<Driver> getAllByStatusOrder(Boolean status){
         return driverRepository.findAllByStatusOrder(status);
     }
 
@@ -92,13 +95,13 @@ public class DriverService {
         driverRepository.save(driver);
     }
 
-    public Driver findDriverByToken(String token){
+    public Driver getDriverByToken(String token){
         return driverRepository.findByToken(token).orElseThrow();
     }
     public void getLocation(Message message){
         Gson gson = new Gson();
         Location location = gson.fromJson(message.getBody(), Location.class);
-        Driver driver = findDriverByToken(message.getToken());
+        Driver driver = getDriverByToken(message.getToken());
         driver.setLastUpdateLocation(new Date(message.getMillisecondsSinceEpoch()));
         driver.setLatitude(location.getLatitude());
         driver.setLongitude(location.getLongitude());

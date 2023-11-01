@@ -70,4 +70,10 @@ public class Driver{
      */
     @Column(name = "last_update_location")
     private Date lastUpdateLocation;
+
+    /**
+     * Время последней установки статуса "cвободен". Нужно для удаления не активных водителей
+     */
+    @Column(name = "time_free_today")
+    private Date timeFreeToday;
 }

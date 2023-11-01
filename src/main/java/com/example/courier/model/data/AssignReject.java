@@ -12,9 +12,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DriversQueuePlusOrder {
+public class AssignReject {
 
     private int queue_id;
+
+    private String driver_token;
 
     private List<Order> orders;
 }

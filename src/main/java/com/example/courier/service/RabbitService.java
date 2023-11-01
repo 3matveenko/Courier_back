@@ -33,8 +33,6 @@ public class RabbitService {
         this.amqpAdmin = amqpAdmin;
     }
 
-    @Autowired
-    OrderService orderService;
 
     public void sendMessage(String token, String message) {
         System.out.println("сообщение рэббит отправлено = " + System.currentTimeMillis()+" \n текст = "+message);
@@ -50,12 +48,6 @@ public class RabbitService {
         Queue queue = new Queue(driverName);
         amqpAdmin.declareQueue(queue);
     }
-    public void getOrderStatusProcessingByToken(String token){
-        String body = gson.toJson(orderService.getOrderStatusProcessingByToken(token));
-        Message newOrders = new Message("","get_my_orders_status_progressing", System.currentTimeMillis(), body);
-        sendMessage(token, gson.toJson(newOrders));
-    }
-
 
     public void deleteExchange(String exchangeName) {
         amqpAdmin.deleteExchange(exchangeName);

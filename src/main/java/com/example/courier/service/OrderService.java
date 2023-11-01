@@ -4,7 +4,7 @@ import com.example.courier.model.Assign;
 import com.example.courier.model.Driver;
 import com.example.courier.model.Order;
 import com.example.courier.model.RejectOrder;
-import com.example.courier.model.data.DriversQueuePlusOrder;
+import com.example.courier.model.data.AssignReject;
 import com.example.courier.model.data.Message;
 import com.example.courier.model.exception.DriversIsEmptyException;
 import com.example.courier.repository.OrderRepository;
@@ -16,6 +16,7 @@ import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -42,17 +43,101 @@ public class OrderService {
     @Autowired
     RejectOrderService rejectOrderService;
 
-    @Autowired
-    TimerStarter timerStarter;
-
     static List<Assign> dbAssigns = new ArrayList<>();
 
-    static List<DriversQueuePlusOrder> rejectedOrders = new ArrayList<>();
+    static List<AssignReject> assignRejectList = new ArrayList<>();
 
     static Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             .setPrettyPrinting()
             .create();
+
+    //********************timer service
+    static Timer timerSum;
+
+    static Timer timerNoDriver;
+
+    static Timer rejectTimer;
+
+    public void startTimerSum(){
+        timerSum = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    settingService.setTimerStartTime("none");
+                    timerSum.cancel();
+                    changeOrders(appointmentDriverAuto());
+                } catch (DriversIsEmptyException e){
+                    startNoDriverTimer();
+                }
+
+            }
+        };
+        settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
+        timerSum.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum")) * 60 * 1000);
+    }
+
+    public void stopTimerSum(){
+        if(timerSum!=null){
+            settingService.setTimerStartTime("none");
+            timerSum.cancel();
+        }
+
+    }
+
+    public void startNoDriverTimer(){
+        timerNoDriver = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    settingService.setTimerStartTime("none");
+                    timerNoDriver.cancel();
+                    for(Assign assign: dbAssigns){
+                        if(assign.getDriver().isStatusOrder()){
+                            assign.getDriver().setTimeFree(new Date());
+                            driverService.save(assign.getDriver());
+                        }
+                    }
+                    changeOrders(appointmentDriverAuto());
+                } catch (DriversIsEmptyException e){
+                    timerNoDriver.cancel();
+                    startNoDriverTimer();
+                }
+            }
+        };
+        settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
+        timerNoDriver.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum_nodriver")) * 60 * 1000);
+    }
+
+    public void stopNoDriverTimer(){
+        if(timerNoDriver!=null){
+            timerNoDriver.cancel();
+        }
+
+    }
+
+    public void startRejectTimer(){
+        rejectTimer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                this.cancel();
+                changingRejectedOrder();
+                //this.run();/////////////
+            }
+        };
+        rejectTimer.schedule(task, (long) 60000);
+    }
+
+    public void stopRejectTimer(){
+        if(rejectTimer!=null){
+            rejectTimer.cancel();
+        }
+    }
+
+    //********************timer service
 
     public Order getOrderById(Long _order_id){
         return orderRepository.findById(_order_id).orElseThrow();
@@ -177,13 +262,18 @@ public class OrderService {
             try{
                 changeOrders(appointmentDriverAuto());
             } catch (DriversIsEmptyException e){
-                timerStarter.startNoDriverTimer();
+                startNoDriverTimer();
             }
         }
     }
 
-    public List<Order> getOrderStatusProcessingByToken(String drivers_token){
+    public List<Order> getOrdersStatusProcessingByToken(String drivers_token){
        return orderRepository.findByStatusDeliveryAndDriver(1,driverService.getDriverByToken(drivers_token));
+    }
+    public void sendOrderStatusProcessingByToken(String token){
+        String body = gson.toJson(getOrdersStatusProcessingByToken(token));
+        Message newOrders = new Message("","get_my_orders_status_progressing", System.currentTimeMillis(), body);
+        rabbitService.sendMessage(token, gson.toJson(newOrders));
     }
 
     public void changeStatusDeliveryToComplete(Long _id){
@@ -195,34 +285,66 @@ public class OrderService {
 
     public void rejectingOrder(Message _message){
         Driver driver = driverService.getDriverByToken(_message.getToken());
-        List<Order> orders = getOrderStatusProcessingByToken(_message.getToken());
-        RejectOrder rejectOrder = new RejectOrder(_message.getBody(),orders,driver,new Date(),driver.getLatitude(),driver.getLongitude());
+        List<Order> orders = getOrdersStatusProcessingByToken(_message.getToken());
+        RejectOrder rejectOrder = new RejectOrder(_message.getBody(),driver,new Date(),driver.getLatitude(),driver.getLongitude());
         rejectOrderService.save(rejectOrder);
         for(Order order:orders){
-            order.setStatusDelivery(0);
+            order.setStatusDelivery(2);
             order.setRejectOrder(rejectOrder);
             save(order);
         }
-        rejectedOrders.add(new DriversQueuePlusOrder(0,orders));
+        assignRejectList.add(new AssignReject(0,_message.getToken(),orders));
         changingRejectedOrder();
     }
 
     public void changingRejectedOrder(){
-        if(!rejectedOrders.isEmpty()){
-            for(DriversQueuePlusOrder driversQueuePlusOrder:rejectedOrders){
-                List<Driver> drivers = driverService.getFreeDrivers();
-                drivers.remove(driversQueuePlusOrder.getOrders().get(0).getDriver());
-                drivers.sort(Comparator.comparing(Driver::getTimeFree));
-                int queue = Math.min(drivers.size() - 1, driversQueuePlusOrder.getQueue_id());
-                changeOrdersByDriverToken(driversQueuePlusOrder.getOrders(),drivers.get(queue).getToken());
-                driversQueuePlusOrder.setQueue_id(queue+1);
-
+            List<Driver> drivers = driverService.getFreeDrivers();
+            for (int i = drivers.size()-1; i >=0 ; i--) {
+                if(Objects.equals(drivers.get(i).getId(), assignRejectList.get(0).getOrders().get(0).getDriver().getId())){
+                    drivers.remove(i);
+                }
             }
+        if(!assignRejectList.isEmpty()){
+            for(AssignReject assignReject: assignRejectList){
+                if(drivers.size() <= assignReject.getQueue_id()){
+                    assignReject.setQueue_id(0);
+                }
+                assignReject.setDriver_token(drivers.get(assignReject.getQueue_id()).getToken());
+                changeRejectedOrdersByDriverToken(assignReject.getOrders(),drivers.get(assignReject.getQueue_id()).getToken());
+                assignReject.setQueue_id(assignReject.getQueue_id()+1);
+                startRejectTimer();
+            }
+        } else {
+            startRejectTimer();
         }
     }
     public void changeOrdersByDriverToken(List<Order> _orders, String _driver_token){
         String body = gson.toJson(_orders);
         Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
         rabbitService.sendMessage(_driver_token,gson.toJson(newOrders));
+    }
+    public void changeRejectedOrdersByDriverToken(List<Order> _orders, String _driver_token){
+        String body = gson.toJson(_orders);
+        Message newOrders = new Message("","new_order_rejected", System.currentTimeMillis(), body);
+        rabbitService.sendMessage(_driver_token,gson.toJson(newOrders));
+    }
+
+    public void acceptRejectedOrder(String _token){
+        Driver driver = driverService.getDriverByToken(_token);
+        for (int i = assignRejectList.size()-1; i >=0 ; i--) {
+            if(Objects.equals(assignRejectList.get(i).getDriver_token(), _token)){
+                List<Order> orders = assignRejectList.get(i).getOrders();
+                for(Order order:orders){
+                    order.setDriver(driver);
+                    order.setStatusDelivery(1);
+                    save(order);
+                }
+                assignRejectList.remove(i);
+                int a = assignRejectList.size();
+            }
+        }
+        if(assignRejectList.isEmpty()){
+            stopRejectTimer();
+        }
     }
 }

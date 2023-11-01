@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,9 +20,6 @@ public class RejectOrder {
     @Column(name = "comment")
     private String comment;
 
-    @OneToMany
-    private List<Order> orders;
-
     @OneToOne
     private Driver driver;
 
@@ -37,9 +33,8 @@ public class RejectOrder {
     private double longitude;
 
 
-    public RejectOrder(String comment, List<Order> orders, Driver driver, Date date, double latitude, double longitude) {
+    public RejectOrder(String comment, Driver driver, Date date, double latitude, double longitude) {
         this.comment = comment;
-        this.orders = orders;
         this.driver = driver;
         this.date = date;
         this.latitude = latitude;

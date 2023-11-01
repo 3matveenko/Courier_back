@@ -32,23 +32,28 @@ public class RabbitListener {
                 case ("accept_order") -> {
                     if (message.getMillisecondsSinceEpoch() + 60000 > System.currentTimeMillis()) {
                         orderService.acceptOrders(message.getToken());
+                        driverService.setDeliveryStatusOrderFalseByToken(message.getToken());
                     }
                 }
                 case ("location") -> driverService.getLocation(message);
                 case ("get_my_orders_status_progressing") -> {
-                    rabbitService.getOrderStatusProcessingByToken(message.getToken());
+                    orderService.sendOrderStatusProcessingByToken(message.getToken());
                 }
 
                 case ("order_success") -> {
                     orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()));
-                    orderService.getOrderStatusProcessingByToken(message.getToken());
+                    orderService.sendOrderStatusProcessingByToken(message.getToken());
                 }
-                case ("reject_order")->{
+                case ("reject_order")-> {
                     orderService.rejectingOrder(message);
                 }
+                case ("accept_rejected_order")->{
+                    orderService.acceptRejectedOrder(message.getToken());
+                    driverService.setDeliveryStatusOrderFalseByToken(message.getToken());
+                }
             }
-        } catch (NoSuchElementException e){
-
+        } catch (Exception e){
+            System.out.println(e);
         }
     }
 }

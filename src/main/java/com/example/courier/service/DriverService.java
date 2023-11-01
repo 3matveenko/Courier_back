@@ -14,10 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DriverService {
@@ -35,7 +33,11 @@ public class DriverService {
     AssignService assignService;
 
     public List<Driver> getFreeDrivers(){
-        return getAllByStatusOrder(true);
+       List<Driver> drivers =  driverRepository.findAllByStatusOrderOrderByTimeFree(true);
+         drivers.stream()
+                 .sorted(Comparator.comparing(Driver::getTimeFree).reversed());
+
+        return drivers;
     }
     public ResponseEntity<String> create(String json) throws AuthoryException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -71,24 +73,10 @@ public class DriverService {
         return driverRepository.findAll();
     }
 
-    public void changeDriverOrderStatus(Long driverId){
-        Driver driver = driverRepository.findById(driverId).orElseThrow();
-      if(driver.isStatusOrder()){
-          driver.setTimeFree(null);
-          driver.setStatusOrder(false);
-      } else {
-          driver.setTimeFree(new Date());
-          driver.setStatusOrder(true);
-      }
-      driverRepository.save(driver);
-    }
+
 
     public void deleteById(Long driverId){
         driverRepository.delete(driverRepository.findById(driverId).orElseThrow());
-    }
-
-    public List<Driver> getAllByStatusOrder(Boolean status){
-        return driverRepository.findAllByStatusOrder(status);
     }
 
     public void save(Driver driver){
@@ -116,12 +104,32 @@ public class DriverService {
         if(optional.isPresent()){
             Driver driver = optional.get();
             if(flag){
-                driver.setStatusOrder(!driver.isStatusOrder());
+                if(driver.isStatusOrder()){
+                    driver.setTimeFree(null);
+                    driver.setStatusOrder(false);
+                } else {
+                    driver.setTimeFree(new Date());
+                    driver.setTimeFreeToday(new Date());
+                    driver.setStatusOrder(true);
+                    driver.setStatusDay(true);
+                }
                 save(driver);
             }
            return driver.isStatusOrder();
         } else {
             throw new AuthoryException("invalid token");
         }
+    }
+    public void changeDriverOrderStatus(Long driverId) throws AuthoryException {
+        Driver driver = driverRepository.findById(driverId).orElseThrow();
+        getStatusOrderByToken(driver.getToken(),true);
+        driverRepository.save(driver);
+    }
+
+    public void setDeliveryStatusOrderFalseByToken(String _token){
+        Driver driver = getDriverByToken(_token);
+        driver.setTimeFree(null);
+        driver.setStatusOrder(false);
+        save(driver);
     }
 }

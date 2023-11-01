@@ -3,6 +3,7 @@ package com.example.courier.controller;
 import com.example.courier.model.Setting;
 import com.example.courier.model.User;
 import com.example.courier.model.data.AllSettings;
+import com.example.courier.model.exception.AuthoryException;
 import com.example.courier.service.DriverService;
 import com.example.courier.service.OrderService;
 import com.example.courier.service.SettingService;
@@ -82,7 +83,7 @@ public class MainController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/change_status/{driverId}")
-    public String changeStatus(@PathVariable Long driverId){
+    public String changeStatus(@PathVariable Long driverId) throws AuthoryException {
         driverService.changeDriverOrderStatus(driverId);
         return "redirect:/";
     }

@@ -50,7 +50,7 @@ public class CrmRestController {
             @RequestBody String json,
             @RequestHeader("Authorization") String token) throws JsonProcessingException {
         try {
-            orderService.newTimer(1);//добавить проверку на то существует таймер или нет
+            orderService.startTimerSum();//добавить проверку на то существует таймер или нет
             securityService.crmSecurity(token);
             orderService.newOrder(json);
             return ResponseEntity.ok("ok");

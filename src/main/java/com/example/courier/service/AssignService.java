@@ -3,12 +3,12 @@ package com.example.courier.service;
 import com.example.courier.model.Assign;
 import com.example.courier.model.Driver;
 import com.example.courier.model.Order;
+import com.example.courier.model.data.Message;
 import com.example.courier.repository.AssignRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AssignService {
@@ -19,25 +19,56 @@ public class AssignService {
     @Autowired
     SettingService settingService;
 
+
     /**
-     * дисстанция 0,0035 = примерно 400м.
+     * дисстанция 0.0007 = примерно 78m по широте. и 60m по долготе
+     * в одном градусе широты 111км
+     * в одном градусе долготы 85км
      */
-    public static double dist = 0.0035;
+    public static double dist = 0.0014;
 
     public void checkAssignStatus(Driver _driver){
         double feLat = Double.parseDouble(settingService.getValueByKey("fe_latitude"));
         double feLong = Double.parseDouble(settingService.getValueByKey("fe_longtitude"));
         if(Math.abs(_driver.getLatitude() - feLat) < dist && Math.abs(_driver.getLongitude() - feLong) < dist){
-
+            List<Assign> assigns = getAssignByDriver(_driver);
+            boolean flag = true;
+            for (Assign assign:assigns){
+                for (Order order: assign.getOrders()){
+                    if(Objects.equals(order.getDateEnd(), new Date(0L))){
+                        flag = false;
+                    }
+                }
+                if(flag){
+                    assign.setTimeEnd(new Date());
+                }
+            }
         }
     }
 
+    public List<Assign> getAssignByDriver(Driver driver){
+        return assignRepository.findByDriverAndTimeEnd(driver, new Date(0L));
+    }
     public Assign getAssignByOrder(Order _order){
         return assignRepository.findByOrdersContaining(_order);
     }
 
     public void save(Assign _assign){
         assignRepository.save(_assign);
+    }
+
+    public void craeteNewAssign(List<Order> _orders, Driver _driver){
+        Assign assign = new Assign();
+        assign.setTimeStart(new Date());
+        assign.setDriver(_driver);
+        assign.setOrders(_orders);
+        save(assign);
+    }
+
+    public List<Assign> getAssignsByDate(Date date1) {
+        Date date2 = new Date(date1.getTime());
+        date2.setHours(23);
+        return assignRepository.findByTimeStartBetween(date1, date2);
     }
 
     public List<Assign> StepByStepPlus(List<Order> _orders, List<Driver> drivers, int sector) {

@@ -1,6 +1,7 @@
 package com.example.courier.controller.API;
 
 import com.example.courier.model.data.Message;
+import com.example.courier.service.AssignService;
 import com.example.courier.service.DriverService;
 import com.example.courier.service.OrderService;
 import com.example.courier.service.RabbitService;
@@ -23,6 +24,9 @@ public class RabbitListener {
     @Autowired
     RabbitService rabbitService;
 
+    @Autowired
+    AssignService assignService;
+
     @org.springframework.amqp.rabbit.annotation.RabbitListener(queues = "back")
     public void getMessage(String json) {
         Gson gson = new Gson();
@@ -33,6 +37,7 @@ public class RabbitListener {
                     if (message.getMillisecondsSinceEpoch() + 60000 > System.currentTimeMillis()) {
                         orderService.acceptOrders(message.getToken());
                         driverService.setDeliveryStatusOrderFalseByToken(message.getToken());
+                        assignService.craeteNewAssign(orderService.getOrdersStatusProcessingByToken(message.getToken()), driverService.getDriverByToken(message.getToken()));
                     }
                 }
                 case ("location") -> driverService.getLocation(message);

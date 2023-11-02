@@ -32,7 +32,7 @@ public class Order{
     private Date dateStart;
 
     @Column(name = "date_end")
-    private Date dateEnd;
+    private Date dateEnd = new Date(0L);
 
     @Column(name = "addres")
     private String address;

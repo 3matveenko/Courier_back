@@ -32,11 +32,7 @@ public class Assign {
     @Column(name = "time_start")
     private Date timeStart;
 
-    @Column(name = "time_open")
-    private Date timeEnd;
-
-    @Column(name = "comment")
-    private String comment;
-
+    @Column(name = "time_end")
+    private Date timeEnd  = new Date(0L);
 
 }

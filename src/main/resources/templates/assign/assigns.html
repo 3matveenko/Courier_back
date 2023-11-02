@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/main.html">
+<div layout:fragment="main-content">
+    <div class="form-group col-md-2 mt-3 ms-3">
+        <h5 for="dateInput" th:text="${#dates.format(date, 'dd  MMMM')}"></h5>
+        <form class="d-flex" method="post" th:action="@{'/assigns_date'}">
+            <input required name="date" type="date" class="form-control mt-3" id="dateInput">
+            <button class="btn btn-outline-secondary mt-3 ms-2">Выбрать</button>
+        </form>
+    </div>
+    <table class="table table-hover mt-3">
+        <thead class="table-secondary">
+        <tr>
+            <td>Номер Рейса</td>
+            <td>Водитель</td>
+            <td>Время выезда</td>
+            <td>Время прибытия</td>
+            <td>Адреса доставок</td>
+            <td>Время доставок</td>
+
+        </tr>
+        </thead>
+        <tbody th:each="assign: ${assigns}">
+        <tr>
+            <td class="align-middle text-center" th:text="${assign.getId()}"></td>
+            <td th:text="${assign.getDriver().getName()}"></td>
+            <td th:text="${#dates.format(assign.getTimeStart(), 'HH:mm')}"></td>
+            <td th:text="${#dates.format(assign.getTimeEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(assign.getTimeEnd(), 'HH:mm')  }"></td>
+            <td><table>
+                <tr>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                </tr>
+            </table></td>
+            <td><table>
+                <tr>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                </tr>
+            </table></td>
+        </tr>
+
+            <!--            <td th:text="${order.getAddress()}"></td>-->
+<!--            <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>-->
+<!--            <td th:text="${#dates.format(order.getDateEnd(), 'HH:mm')}"></td>-->
+<!--            <td>-->
+<!--                <span th:if="${order.getDriver()==null}">Не назначен</span>-->
+<!--                <span th:if="${order.getDriver()!=null}" th:text="${order.getDriver().getName()}"></span>-->
+<!--            </td>-->
+<!--            <td>-->
+<!--                <span class="text-danger" th:if="${order.getStatusDelivery() == 0}">принят</span>-->
+<!--                <span class="text-warning" th:if="${order.getStatusDelivery() == 1}">в пути</span>-->
+<!--                <span class="text-success" th:if="${order.getStatusDelivery() == 2}">доставлено</span>-->
+<!--            </td>-->
+
+        </tbody>
+    </table>
+</div>
+</html>

@@ -4,10 +4,7 @@ import com.example.courier.model.Setting;
 import com.example.courier.model.User;
 import com.example.courier.model.data.AllSettings;
 import com.example.courier.model.exception.AuthoryException;
-import com.example.courier.service.DriverService;
-import com.example.courier.service.OrderService;
-import com.example.courier.service.SettingService;
-import com.example.courier.service.UserService;
+import com.example.courier.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +34,9 @@ public class MainController {
     @Autowired
     SettingService settingService;
 
+    @Autowired
+    AssignService assignService;
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/")
     public String index(Model model,
@@ -65,8 +65,21 @@ public class MainController {
         date.setMinutes(0);
         date.setSeconds(0);
         model.addAttribute("date", date);
-        model.addAttribute("orders", orderService.getOrderByDate(date));
+        model.addAttribute("assigns", orderService.getOrderByDate(date));
         return "order/orders";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/assigns")
+    public String assigns(
+            Model model){
+        Date date = new Date();
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        model.addAttribute("date", date);
+        model.addAttribute("assigns", assignService.getAssignsByDate(date));
+        return "assign/assigns";
     }
 
     @PreAuthorize("isAuthenticated()")

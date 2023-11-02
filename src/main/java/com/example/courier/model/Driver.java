@@ -1,6 +1,5 @@
 package com.example.courier.model;
 
-import com.zaxxer.hikari.util.ClockSource;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

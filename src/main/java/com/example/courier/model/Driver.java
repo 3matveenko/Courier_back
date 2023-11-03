@@ -73,6 +73,15 @@ public class Driver{
     /**
      * Время последней установки статуса "cвободен". Нужно для удаления не активных водителей
      */
-    @Column(name = "time_free_today")
-    private Date timeFreeToday;
+    @Column(name = "last_activity")
+    private Date lastActivity;
+
+    public void logout(){
+        setLongitude(0);
+        setLatitude(0);
+        setStatusDay(false);
+        setStatusOrder(false);
+        setTimeFree(new Date(0L));
+        setLastUpdateLocation(new Date(0L));
+    }
 }

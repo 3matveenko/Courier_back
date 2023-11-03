@@ -42,6 +42,7 @@ public class RabbitListener {
                 }
                 case ("location") -> driverService.getLocation(message);
                 case ("get_my_orders_status_progressing") -> {
+                    Thread.sleep(500);
                     orderService.sendOrderStatusProcessingByToken(message.getToken());
                 }
 
@@ -56,6 +57,8 @@ public class RabbitListener {
                     orderService.acceptRejectedOrder(message.getToken());
                     driverService.setDeliveryStatusOrderFalseByToken(message.getToken());
                 }
+                case ("logout")->driverService.logout(message.getToken());
+
             }
         } catch (Exception e){
             System.out.println(e);

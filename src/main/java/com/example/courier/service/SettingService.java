@@ -55,13 +55,13 @@ public class SettingService {
                 getValueByKey("rabbit_username"),
                 getValueByKey("rabbit_password"),
                 getValueByKey("order_distribution_principle"),
-                getValueByKey("beginning_work")
+                getValueByKey("beginning_work"),
+                getValueByKey("crm_server_address")
         );
     }
 
     public void updatingSettings(AllSettings allSettings){
         saveValueByKey("timer_sum",allSettings.timerSum);
-        saveValueByKey("timer_start_time",allSettings.timerStartTime);
         saveValueByKey("angle",allSettings.angle);
         saveValueByKey("timer_sum_nodriver",allSettings.timerSumNodriver);
         saveValueByKey("fe_latitude",allSettings.feLatitude);
@@ -75,5 +75,6 @@ public class SettingService {
         saveValueByKey("rabbit_password",allSettings.rabbitPassword);
         saveValueByKey("order_distribution_principle",allSettings.orderDistributionPrinciple);
         saveValueByKey("beginning_work",allSettings.beginningWork);
+        saveValueByKey("crm_server_address", allSettings.crm_server_address);
     }
 }

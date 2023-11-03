@@ -93,14 +93,12 @@
                             <div class="col-md-6">
                                 <div class="text-center">Занят</div>
                                 <hr>
-                                <div th:each="driver : ${drivers}" th:if="${!driver.isStatusOrder()}"
+                                <div th:each="driver : ${drivers}" th:if="${!driver.isStatusOrder()} and ${driver.isStatusDay()}"
                                      class="mt-2 d-flex alert alert-danger alert-dismissible fade show justify-content-between"
                                      role="alert">
                                     <div>
                                         <a th:href="'/change_status/'+${driver.getId()}"
                                            class="text-decoration-none"><img src="/icons/plus.png" height="25px"></a>
-                                        <img style="cursor: pointer" data-bs-toggle="modal" th:data-bs-target="'#exampleModal'+${driver.getId()}" class="ms-4" src="/icons/info.png" height="25px">
-
                                     </div>
                                     <div th:text="${driver.getName()}"></div>
                                     <div class="modal fade" th:id="'exampleModal'+${driver.getId()}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

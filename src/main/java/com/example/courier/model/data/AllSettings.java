@@ -44,4 +44,6 @@ public class AllSettings {
     public String orderDistributionPrinciple;
 
     public String beginningWork;
+
+    public String crm_server_address;
 }

@@ -95,6 +95,18 @@ public class MainController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/assigns_date")
+    public String assignsDate(
+            Model model,
+            @RequestParam("date") String dateString) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = dateFormat.parse(dateString);
+        model.addAttribute("date", date);
+        model.addAttribute("assigns", assignService.getAssignsByDate(date));
+        return "assign/assigns";
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/change_status/{driverId}")
     public String changeStatus(@PathVariable Long driverId) throws AuthoryException {
         driverService.changeDriverOrderStatus(driverId);

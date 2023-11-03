@@ -12,6 +12,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class RabbitService {
     static Gson gson = new GsonBuilder()
@@ -35,7 +37,7 @@ public class RabbitService {
 
 
     public void sendMessage(String token, String message) {
-        System.out.println("сообщение рэббит отправлено = " + System.currentTimeMillis()+" \n текст = "+message);
+        System.out.println("сообщение рэббит отправлено = " + System.currentTimeMillis()+" \n текст = "+message+" time = "+new Date());
         rabbitTemplate.convertAndSend(token, message);
     }
 

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -43,6 +44,7 @@ public class OrderService {
     @Autowired
     RejectOrderService rejectOrderService;
 
+
     static List<Assign> dbAssigns = new ArrayList<>();
 
     static List<AssignReject> assignRejectList = new ArrayList<>();
@@ -60,22 +62,37 @@ public class OrderService {
     static Timer rejectTimer;
 
     public void startTimerSum(){
-        timerSum = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    settingService.setTimerStartTime("none");
-                    timerSum.cancel();
-                    changeOrders(appointmentDriverAuto());
-                } catch (DriversIsEmptyException e){
-                    startNoDriverTimer();
+        if("adaptive".equals(settingService.getValueByKey("order_distribution_principle"))&&"none".equals(settingService.getValueByKey("timer_start_time"))){
+            timerSum = new Timer();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        settingService.setTimerStartTime("none");
+                        timerSum.cancel();
+                        changeOrders(appointmentDriverAuto());
+                    } catch (DriversIsEmptyException e){
+                        startNoDriverTimer();
+                    }
                 }
+            };
+            settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
+            timerSum.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum")) * 60 * 1000);
+        }
+    }
 
+
+
+    @Scheduled(cron = "0 0,30 * * * ?")
+    public void startTimerSum2(){
+        if("schedule".equals(settingService.getValueByKey("order_distribution_principle"))){
+            try {
+                settingService.setTimerStartTime("none");
+                changeOrders(appointmentDriverAuto());
+            } catch (DriversIsEmptyException e){
+                startNoDriverTimer();
             }
-        };
-        settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
-        timerSum.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum")) * 60 * 1000);
+        }
     }
 
     public void stopTimerSum(){
@@ -143,7 +160,7 @@ public class OrderService {
         return orderRepository.findById(_order_id).orElseThrow();
     }
 
-    public void newOrder(String json) throws JsonProcessingException {
+    public Long newOrder(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Order order = objectMapper.readValue(json, Order.class);
@@ -151,6 +168,7 @@ public class OrderService {
         order.setStatusDelivery(0);
         order.setAngle(locationService.angleBetweenVerticalAndPoint(order.getLatitude(), order.getLongitude()));
         orderRepository.save(order);
+        return order.getId();
     }
 
     public List<Order> getOrderItWork() {
@@ -346,5 +364,31 @@ public class OrderService {
         if(assignRejectList.isEmpty()){
             stopRejectTimer();
         }
+    }
+
+    public void giveTheDriverAnOrder(String _driverToken, long _orderId){
+        for (int i = dbAssigns.size()-1; i >=0 ; i--) {
+          boolean flag = false;
+          for(Order order:dbAssigns.get(i).getOrders()){
+              if(order.getId()==_orderId){
+                  flag = true;
+              }
+          }
+          if(flag){
+              dbAssigns.remove(i);
+          }
+        }
+        Driver driver = driverService.getDriverByToken(_driverToken);
+        List<Order> orders = new ArrayList<>();
+        orders.add(getOrderById(_orderId));
+        Assign assign = new Assign();
+        assign.setDriver(driver);
+        assign.setTimeStart(new Date());
+        assign.setOrders(orders);
+        dbAssigns.add(assign);
+
+        String body = gson.toJson(orders);
+        Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
+        rabbitService.sendMessage(_driverToken,gson.toJson(newOrders));
     }
 }

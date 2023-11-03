@@ -41,6 +41,7 @@ public class AssignService {
                 }
                 if(flag){
                     assign.setTimeEnd(new Date());
+                    save(assign);
                 }
             }
         }
@@ -68,7 +69,11 @@ public class AssignService {
     public List<Assign> getAssignsByDate(Date date1) {
         Date date2 = new Date(date1.getTime());
         date2.setHours(23);
-        return assignRepository.findByTimeStartBetween(date1, date2);
+        List<Assign> assigns = assignRepository.findByTimeStartBetween(date1, date2);
+        for (Assign assign:assigns){
+            assign.getOrders().sort(Comparator.comparing(Order::getDateEnd));
+        }
+        return assigns;
     }
 
     public List<Assign> StepByStepPlus(List<Order> _orders, List<Driver> drivers, int sector) {

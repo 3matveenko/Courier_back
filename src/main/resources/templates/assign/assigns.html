@@ -9,7 +9,7 @@
             <button class="btn btn-outline-secondary mt-3 ms-2">Выбрать</button>
         </form>
     </div>
-    <table class="table table-hover mt-3">
+    <table class="table table-hover mt-3 table-bordered">
         <thead class="table-secondary">
         <tr>
             <td>Номер Рейса</td>
@@ -24,51 +24,38 @@
         <tbody th:each="assign: ${assigns}">
         <tr>
             <td class="align-middle text-center" th:text="${assign.getId()}"></td>
-            <td th:text="${assign.getDriver().getName()}"></td>
-            <td th:text="${#dates.format(assign.getTimeStart(), 'HH:mm')}"></td>
-            <td th:text="${#dates.format(assign.getTimeEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(assign.getTimeEnd(), 'HH:mm')  }"></td>
-            <td><table>
-                <tr>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                </tr>
-            </table></td>
-            <td><table>
-                <tr>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                </tr>
-            </table></td>
+            <td class="align-middle text-center" th:text="${assign.getDriver().getName()}"></td>
+            <td class="align-middle text-center" th:text="${#dates.format(assign.getTimeStart(), 'HH:mm')}"></td>
+            <td class="align-middle text-center"
+                th:text="${#dates.format(assign.getTimeEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(assign.getTimeEnd(), 'HH:mm')  }"></td>
+            <td>
+                <table th:each="order:${assign.getOrders()}">
+                    <tr>
+                        <td th:text="${order.getAddress()}"></td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table th:each="order:${assign.getOrders()}">
+                    <tr>
+                        <td th:text="${#dates.format(order.getDateEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(order.getDateEnd(), 'HH:mm')  }"></td>
+                    </tr>
+                </table>
+            </td>
         </tr>
 
-            <!--            <td th:text="${order.getAddress()}"></td>-->
-<!--            <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>-->
-<!--            <td th:text="${#dates.format(order.getDateEnd(), 'HH:mm')}"></td>-->
-<!--            <td>-->
-<!--                <span th:if="${order.getDriver()==null}">Не назначен</span>-->
-<!--                <span th:if="${order.getDriver()!=null}" th:text="${order.getDriver().getName()}"></span>-->
-<!--            </td>-->
-<!--            <td>-->
-<!--                <span class="text-danger" th:if="${order.getStatusDelivery() == 0}">принят</span>-->
-<!--                <span class="text-warning" th:if="${order.getStatusDelivery() == 1}">в пути</span>-->
-<!--                <span class="text-success" th:if="${order.getStatusDelivery() == 2}">доставлено</span>-->
-<!--            </td>-->
+        <!--            <td th:text="${order.getAddress()}"></td>-->
+        <!--            <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>-->
+        <!--            <td th:text="${#dates.format(order.getDateEnd(), 'HH:mm')}"></td>-->
+        <!--            <td>-->
+        <!--                <span th:if="${order.getDriver()==null}">Не назначен</span>-->
+        <!--                <span th:if="${order.getDriver()!=null}" th:text="${order.getDriver().getName()}"></span>-->
+        <!--            </td>-->
+        <!--            <td>-->
+        <!--                <span class="text-danger" th:if="${order.getStatusDelivery() == 0}">принят</span>-->
+        <!--                <span class="text-warning" th:if="${order.getStatusDelivery() == 1}">в пути</span>-->
+        <!--                <span class="text-success" th:if="${order.getStatusDelivery() == 2}">доставлено</span>-->
+        <!--            </td>-->
 
         </tbody>
     </table>

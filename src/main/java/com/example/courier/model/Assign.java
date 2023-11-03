@@ -26,7 +26,7 @@ public class Assign {
     @OneToOne
     private Driver driver;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Order> orders;
 
     @Column(name = "time_start")

@@ -11,11 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DriverService {
@@ -32,12 +33,30 @@ public class DriverService {
     @Autowired
     AssignService assignService;
 
-    public List<Driver> getFreeDrivers(){
-       List<Driver> drivers =  driverRepository.findAllByStatusOrderOrderByTimeFree(true);
-         drivers.stream()
-                 .sorted(Comparator.comparing(Driver::getTimeFree).reversed());
+    @Scheduled(cron = "0 0 23 * * ?")
+    public void setDiversStatus() {
+        Date monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth()-1);
+        List<Driver> drivers = driverRepository.findAll();
+        for (Driver driver: drivers){
+            driver.setStatusOrder(false);
+            driver.setStatusDay(false);
+            if(driver.getLastActivity().before(monthAgo)&& !Objects.equals(driver.getLogin(), "")){
+                deleteById(driver.getId());
+            }
+        }
+    }
 
+    public List<Driver> getFreeDrivers(){
+        List<Driver> drivers = driverRepository.findAllByStatusOrderOrderByTimeFree(true);
+        drivers.sort(Comparator.comparing(Driver::getTimeFree).reversed());
         return drivers;
+        //проверить
+//       List<Driver> drivers =  driverRepository.findAllByStatusOrderOrderByTimeFree(true);
+//         drivers.stream()
+//                 .sorted(Comparator.comparing(Driver::getTimeFree).reversed());
+//
+//        return drivers;
     }
     public ResponseEntity<String> create(String json) throws AuthoryException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -50,6 +69,7 @@ public class DriverService {
             rabbitService.createExchange(token);
             driver.setStatusDay(false);
             driver.setStatusOrder(false);
+            driver.setLastActivity(new Date());
             driverRepository.save(driver);
             System.out.println("ответ = "+ResponseEntity.ok(token));
             return ResponseEntity.ok(token);
@@ -76,7 +96,12 @@ public class DriverService {
 
 
     public void deleteById(Long driverId){
-        driverRepository.delete(driverRepository.findById(driverId).orElseThrow());
+        Driver driver = driverRepository.findById(driverId).orElseThrow();
+        driver.logout();
+        driver.setLogin("");
+        driver.setPassword("");
+        rabbitService.deleteQueue(driver.getToken());
+        save(driver);
     }
 
     public void save(Driver driver){
@@ -95,7 +120,6 @@ public class DriverService {
         driver.setLongitude(location.getLongitude());
         assignService.checkAssignStatus(driver);
         save(driver);
-
     }
 
 
@@ -109,7 +133,7 @@ public class DriverService {
                     driver.setStatusOrder(false);
                 } else {
                     driver.setTimeFree(new Date());
-                    driver.setTimeFreeToday(new Date());
+                    driver.setLastActivity(new Date());
                     driver.setStatusOrder(true);
                     driver.setStatusDay(true);
                 }
@@ -131,5 +155,11 @@ public class DriverService {
         driver.setTimeFree(null);
         driver.setStatusOrder(false);
         save(driver);
+    }
+
+    public void logout(String _token){
+       Driver driver = getDriverByToken(_token);
+       driver.logout();
+       save(driver);
     }
 }

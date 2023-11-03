@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Tag(name = "crm", description = "API для запросов от 1c")
 @RestController
@@ -50,7 +54,8 @@ public class CrmRestController {
             @RequestBody String json,
             @RequestHeader("Authorization") String token) throws JsonProcessingException {
         try {
-            orderService.startTimerSum();//добавить проверку на то существует таймер или нет
+
+            orderService.startTimerSum();
             securityService.crmSecurity(token);
             orderService.newOrder(json);
             return ResponseEntity.ok("ok");
@@ -73,5 +78,41 @@ public class CrmRestController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
         }
     }
+//гет запрос
+    public static void sendGetRequestToGoogle() {
+        try {
+            URL url = new URL("http://www.google.com");
 
+            // Открываем соединение (connection) с URL
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Устанавливаем метод запроса как GET
+            connection.setRequestMethod("GET");
+
+            // Получаем ответ от сервера
+            int responseCode = connection.getResponseCode();
+
+            // Проверяем, что ответ успешный (код 200)
+            if (responseCode == 200) {
+                // Чтение данных из ответа
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = reader.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                reader.close();
+
+                // Выводим полученные данные
+                System.out.println(response.toString());
+            } else {
+                System.out.println("GET-запрос не выполнен. Код ответа: " + responseCode);
+            }
+
+            connection.disconnect(); // Закрываем соединение
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

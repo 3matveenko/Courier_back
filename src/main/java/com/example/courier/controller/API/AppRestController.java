@@ -44,7 +44,6 @@ public class AppRestController {
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(400).body("Bad request");
         }
-
     }
 
     @Operation(summary = "авторизация", description = """

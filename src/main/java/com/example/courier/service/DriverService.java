@@ -1,6 +1,7 @@
 package com.example.courier.service;
 
 import com.example.courier.model.Driver;
+import com.example.courier.model.Order;
 import com.example.courier.model.data.Location;
 import com.example.courier.model.data.Message;
 import com.example.courier.model.exception.AuthoryException;
@@ -33,6 +34,9 @@ public class DriverService {
     @Autowired
     AssignService assignService;
 
+    @Autowired
+    SendService sendService;
+
     @Scheduled(cron = "0 0 23 * * ?")
     public void setDiversStatus() {
         Date monthAgo = new Date();
@@ -51,13 +55,8 @@ public class DriverService {
         List<Driver> drivers = driverRepository.findAllByStatusOrderOrderByTimeFree(true);
         drivers.sort(Comparator.comparing(Driver::getTimeFree).reversed());
         return drivers;
-        //проверить
-//       List<Driver> drivers =  driverRepository.findAllByStatusOrderOrderByTimeFree(true);
-//         drivers.stream()
-//                 .sorted(Comparator.comparing(Driver::getTimeFree).reversed());
-//
-//        return drivers;
     }
+
     public ResponseEntity<String> create(String json) throws AuthoryException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Driver driver = objectMapper.readValue(json, Driver.class);
@@ -71,7 +70,7 @@ public class DriverService {
             driver.setStatusOrder(false);
             driver.setLastActivity(new Date());
             driverRepository.save(driver);
-            System.out.println("ответ = "+ResponseEntity.ok(token));
+            sendService.sendTo1cAboutCreatingNewDriver(driver);
             return ResponseEntity.ok(token);
         } else {
             throw new AuthoryException("505");
@@ -90,9 +89,10 @@ public class DriverService {
     }
 
     public List<Driver> getAll(){
-        return driverRepository.findAll();
+        List<Driver> drivers =  driverRepository.findAll();
+        drivers.sort(Comparator.comparing(Driver::isStatusOrder).reversed());
+        return drivers;
     }
-
 
 
     public void deleteById(Long driverId){

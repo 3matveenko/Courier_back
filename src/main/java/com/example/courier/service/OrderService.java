@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -168,6 +170,12 @@ public class OrderService {
         order.setStatusDelivery(0);
         order.setAngle(locationService.angleBetweenVerticalAndPoint(order.getLatitude(), order.getLongitude()));
         orderRepository.save(order);
+
+        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+        String driverToken = jsonObject.get("driver_token").getAsString();
+        if(!"".equals(driverToken)){
+            giveTheDriverAnOrder(driverToken, order.getId());
+        }
         return order.getId();
     }
 
@@ -383,10 +391,8 @@ public class OrderService {
         orders.add(getOrderById(_orderId));
         Assign assign = new Assign();
         assign.setDriver(driver);
-        assign.setTimeStart(new Date());
         assign.setOrders(orders);
         dbAssigns.add(assign);
-
         String body = gson.toJson(orders);
         Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
         rabbitService.sendMessage(_driverToken,gson.toJson(newOrders));

@@ -68,4 +68,7 @@ public class Order{
 
     @OneToOne
     private RejectOrder rejectOrder;
+
+    @Column
+    private String comment;
 }

@@ -137,4 +137,14 @@ public class MainController {
         model.addAttribute("flagSave",true);
         return "settings/settings";
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/change_driver")
+    public String changeDriver(
+            @RequestParam String driverToken,
+            @RequestParam Long orderId
+    ){
+        orderService.giveTheDriverAnOrder(driverToken,orderId);
+        return "redirect:/";
+    }
 }

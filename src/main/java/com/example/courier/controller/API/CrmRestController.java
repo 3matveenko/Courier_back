@@ -54,7 +54,6 @@ public class CrmRestController {
             @RequestBody String json,
             @RequestHeader("Authorization") String token) throws JsonProcessingException {
         try {
-
             orderService.startTimerSum();
             securityService.crmSecurity(token);
             orderService.newOrder(json);
@@ -64,7 +63,6 @@ public class CrmRestController {
         } catch (ForbiddenException e) {
             return ResponseEntity.status(403).body("Invalid token");
         }
-
     }
 
     @GetMapping("/old")

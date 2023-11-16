@@ -1,6 +1,5 @@
 package com.example.courier.service;
 
-import com.example.courier.model.data.Message;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.annotation.PostConstruct;
@@ -12,6 +11,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Service
@@ -37,7 +40,7 @@ public class RabbitService {
 
 
     public void sendMessage(String token, String message) {
-        System.out.println("сообщение рэббит отправлено = " + System.currentTimeMillis()+" \n текст = "+message+" time = "+new Date());
+        System.out.println("сообщение рэббит отправлено = " + System.currentTimeMillis()+" \n текст = "+message+" time = "+new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         rabbitTemplate.convertAndSend(token, message);
     }
 

@@ -25,9 +25,9 @@
         <tr>
             <td class="align-middle text-center" th:text="${assign.getId()}"></td>
             <td class="align-middle text-center" th:text="${assign.getDriver().getName()}"></td>
-            <td class="align-middle text-center" th:text="${#dates.format(assign.getTimeStart(), 'HH:mm')}"></td>
+            <td class="align-middle text-center" th:text="${#dates.format(assign.getTimeStartAlmaty(), 'HH:mm')}"></td>
             <td class="align-middle text-center"
-                th:text="${#dates.format(assign.getTimeEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(assign.getTimeEnd(), 'HH:mm')  }"></td>
+                th:text="${#dates.format(assign.getTimeEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(assign.getTimeEndAlmaty(), 'HH:mm')  }"></td>
             <td>
                 <table th:each="order:${assign.getOrders()}">
                     <tr>
@@ -38,7 +38,7 @@
             <td>
                 <table th:each="order:${assign.getOrders()}">
                     <tr>
-                        <td th:text="${#dates.format(order.getDateEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(order.getDateEnd(), 'HH:mm')  }"></td>
+                        <td th:text="${#dates.format(order.getTimeEndAlmaty(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(order.getTimeEndAlmaty(), 'HH:mm')  }"></td>
                     </tr>
                 </table>
             </td>

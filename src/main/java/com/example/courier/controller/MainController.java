@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -60,12 +64,12 @@ public class MainController {
     @GetMapping(value = "/orders")
     public String orders(
             Model model){
-        Date date = new Date();
+        Date date = new  Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli());
         date.setHours(0);
         date.setMinutes(0);
         date.setSeconds(0);
         model.addAttribute("date", date);
-        model.addAttribute("assigns", orderService.getOrderByDate(date));
+        model.addAttribute("orders", orderService.getOrderByDate(date));
         return "order/orders";
     }
 
@@ -73,7 +77,7 @@ public class MainController {
     @GetMapping(value = "/assigns")
     public String assigns(
             Model model){
-        Date date = new Date();
+        Date date = new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli());
         date.setHours(0);
         date.setMinutes(0);
         date.setSeconds(0);

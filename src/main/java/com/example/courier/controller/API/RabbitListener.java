@@ -1,10 +1,7 @@
 package com.example.courier.controller.API;
 
 import com.example.courier.model.data.Message;
-import com.example.courier.service.AssignService;
-import com.example.courier.service.DriverService;
-import com.example.courier.service.OrderService;
-import com.example.courier.service.RabbitService;
+import com.example.courier.service.*;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +23,9 @@ public class RabbitListener {
 
     @Autowired
     AssignService assignService;
+
+    @Autowired
+    SendService sendService;
 
     @org.springframework.amqp.rabbit.annotation.RabbitListener(queues = "back")
     public void getMessage(String json) {
@@ -58,6 +58,7 @@ public class RabbitListener {
                     driverService.setDeliveryStatusOrderFalseByToken(message.getToken());
                 }
                 case ("logout")->driverService.logout(message.getToken());
+                case ("send_sms")->sendService.sendSms(message);
 
             }
         } catch (Exception e){

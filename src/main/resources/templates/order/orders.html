@@ -28,8 +28,8 @@
             <td th:text="${order.getCurrent()}"></td>
             <td th:text="${order.getPhone()}"></td>
             <td th:text="${order.getAddress()}"></td>
-            <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
-            <td th:text="${#dates.format(order.getDateEnd(), 'HH:mm')}"></td>
+            <td th:text="${#dates.format(order.getTimeStartAlmaty(), 'HH:mm')}"></td>
+            <td th:text="${#dates.format(order.getTimeEndAlmaty(), 'HH:mm')}"></td>
             <td>
                 <span th:if="${order.getDriver()==null}">Не назначен</span>
                 <span th:if="${order.getDriver()!=null}" th:text="${order.getDriver().getName()}"></span>

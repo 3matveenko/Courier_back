@@ -8,6 +8,10 @@ import com.example.courier.repository.AssignRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -40,7 +44,7 @@ public class AssignService {
                     }
                 }
                 if(flag){
-                    assign.setTimeEnd(new Date());
+                    assign.setTimeEnd(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
                     save(assign);
                 }
             }
@@ -60,7 +64,7 @@ public class AssignService {
 
     public void craeteNewAssign(List<Order> _orders, Driver _driver){
         Assign assign = new Assign();
-        assign.setTimeStart(new Date());
+        assign.setTimeStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         assign.setDriver(_driver);
         assign.setOrders(_orders);
         save(assign);

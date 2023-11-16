@@ -20,6 +20,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -45,6 +49,9 @@ public class OrderService {
 
     @Autowired
     RejectOrderService rejectOrderService;
+
+    @Autowired
+    SendService sendService;
 
 
     static List<Assign> dbAssigns = new ArrayList<>();
@@ -78,7 +85,8 @@ public class OrderService {
                     }
                 }
             };
-            settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
+            settingService.setTimerStartTime(new SimpleDateFormat("HH:mm")
+                    .format(new  Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli())));
             timerSum.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum")) * 60 * 1000);
         }
     }
@@ -115,7 +123,7 @@ public class OrderService {
                     timerNoDriver.cancel();
                     for(Assign assign: dbAssigns){
                         if(assign.getDriver().isStatusOrder()){
-                            assign.getDriver().setTimeFree(new Date());
+                            assign.getDriver().setTimeFree(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
                             driverService.save(assign.getDriver());
                         }
                     }
@@ -126,7 +134,7 @@ public class OrderService {
                 }
             }
         };
-        settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date()));
+        settingService.setTimerStartTime(new SimpleDateFormat("HH:mm").format(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli())));
         timerNoDriver.schedule(task, (long) Integer.parseInt(settingService.getValueByKey("timer_sum_nodriver")) * 60 * 1000);
     }
 
@@ -166,7 +174,7 @@ public class OrderService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Order order = objectMapper.readValue(json, Order.class);
-        order.setDateStart(new Date());
+        order.setDateStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         order.setStatusDelivery(0);
         order.setAngle(locationService.angleBetweenVerticalAndPoint(order.getLatitude(), order.getLongitude()));
         orderRepository.save(order);
@@ -253,7 +261,7 @@ public class OrderService {
      * Установка таймера для того, чтобы дождаться ответа от водителей о принятии заказа
      */
     public void setTimeResponse(){
-        System.out.println("setTimeResponse = "+new Date());
+        System.out.println("setTimeResponse = "+new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         Timer timeResponse = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -272,7 +280,7 @@ public class OrderService {
                     order.setDriver(driver);
                     save(order);
                 }
-                dbAssigns.get(i).setTimeStart(new Date());
+                dbAssigns.get(i).setTimeStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
                 dbAssigns.remove(i);
             }
         }
@@ -281,7 +289,7 @@ public class OrderService {
     public void checkingResponseFromDriver(){
         if(!dbAssigns.isEmpty()){
             for (Assign assign: dbAssigns){
-                assign.getDriver().setTimeFree(new Date());
+                assign.getDriver().setTimeFree(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
                 driverService.save(assign.getDriver());
             }
             dbAssigns.clear();
@@ -305,17 +313,23 @@ public class OrderService {
     public void changeStatusDeliveryToComplete(Long _id){
         Order order = orderRepository.findById(_id).orElseThrow();
         order.setStatusDelivery(2);
-        order.setDateEnd(new Date());
+        order.setDateEnd(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         save(order);
+        sendService.sendTo1cAboutCompleteOrder(order.getGuid());
     }
 
     public void rejectingOrder(Message _message){
         Driver driver = driverService.getDriverByToken(_message.getToken());
         List<Order> orders = getOrdersStatusProcessingByToken(_message.getToken());
-        RejectOrder rejectOrder = new RejectOrder(_message.getBody(),driver,new Date(),driver.getLatitude(),driver.getLongitude());
+        RejectOrder rejectOrder = new RejectOrder(
+                _message.getBody(),
+                driver,
+                new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()),
+                driver.getLatitude(),
+                driver.getLongitude());
         rejectOrderService.save(rejectOrder);
         for(Order order:orders){
-            order.setStatusDelivery(2);
+            order.setStatusDelivery(0);
             order.setRejectOrder(rejectOrder);
             save(order);
         }
@@ -388,7 +402,10 @@ public class OrderService {
         }
         Driver driver = driverService.getDriverByToken(_driverToken);
         List<Order> orders = new ArrayList<>();
-        orders.add(getOrderById(_orderId));
+        Order order = getOrderById(_orderId);
+        order.setStatusDelivery(0);
+        save(order);
+        orders.add(order);
         Assign assign = new Assign();
         assign.setDriver(driver);
         assign.setOrders(orders);

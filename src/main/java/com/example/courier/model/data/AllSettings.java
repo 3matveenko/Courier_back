@@ -46,4 +46,8 @@ public class AllSettings {
     public String beginningWork;
 
     public String crm_server_address;
+
+    public String crmLogin;
+
+    public String crmPassword;
 }

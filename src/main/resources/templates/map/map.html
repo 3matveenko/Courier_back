@@ -38,7 +38,7 @@
                                                 <td th:text="${order.getAddress()}"></td>
                                             <tr>
                                                 <td>Время принятия заказа :</td>
-                                                <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
+                                                <td th:text="${#dates.format(order.getTimeStartAlmaty(), 'HH:mm')}"></td>
                                             </tr>
                                         </table>
                                     </div>
@@ -83,6 +83,8 @@
                             <span>В пути</span>
                             <hr>
                             <div class="col-md-6" th:each="order : ${orders}" th:if="${order.getStatusDelivery()==1}">
+                                <a href="" data-bs-toggle="modal" th:data-bs-target="'#exampleModal2'+${order.getId()}"
+                                   class="text-decoration-none">
                                 <div class=" alert alert-warning alert-dismissible fade show" role="alert">
                                     <table>
                                         <tr>
@@ -101,10 +103,51 @@
                                             <td th:text="${order.getAddress()}"></td>
                                         <tr>
                                             <td>Время принятия заказа :</td>
-                                            <td th:text="${#dates.format(order.getDateStart(), 'HH:mm')}"></td>
+                                            <td th:text="${#dates.format(order.getTimeStartAlmaty(), 'HH:mm')}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Назначен водителю :</td>
+                                            <td th:text="${order.getDriver().getName()}"></td>
                                         </tr>
                                     </table>
                                 </div>
+                                </a>
+                                <!-- Modal -->
+                                <div class="modal fade" th:id="'exampleModal2'+${order.getId()}" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form th:action="${'/change_driver'}" method="post" >
+                                                <input type="hidden" th:value="${order.getId()}" name="orderId">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel2">Назначение другого
+                                                        водителя</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body" th:each="driver : ${drivers}"
+                                                     th:if="${driver.isStatusDay()}">
+                                                    <input th:id="${'driver_name_' + driver.getId()}" th:value="${driver.getToken()}" type="radio" th:name="driverToken">
+                                                    <label class="text-success"
+                                                           th:for="${'driver_name_' + driver.getId()}"
+                                                           th:if="${driver.isStatusOrder()}"
+                                                           th:text="${driver.getName()}"></label>
+                                                    <label class="text-danger"
+                                                           th:for="${'driver_name_' + driver.getId()}"
+                                                           th:if="${!driver.isStatusOrder()}"
+                                                           th:text="${driver.getName()}"></label>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Отмена
+                                                    </button>
+                                                    <button class="btn btn-primary">назначить</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Modal -->
                             </div>
                         </div>
                     </div>
@@ -159,7 +202,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -224,8 +266,6 @@
                 }
             }
         }
-
-
     </script>
 </div>
 </html>

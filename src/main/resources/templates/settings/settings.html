@@ -84,12 +84,22 @@
                 </td>
             </tr>
             <tr>
+                <td class="w-50 align-middle">password 1c</td>
+                <td class="d-flex align-items-center"><input class="form-control w-50" name="rabbitPassword" th:value="${allSettings.getCrmPassword()}">
+                </td>
+            </tr>
+            <tr>
+                <td class="w-50 align-middle">login 1c</td>
+                <td class="d-flex align-items-center"><input class="form-control w-50" name="rabbitPassword" th:value="${allSettings.getCrmLogin()}">
+                </td>
+            </tr>
+            <tr>
                 <td class="w-50 align-middle">Токен 1с</td>
                 <td class="d-flex align-items-center" th:text="${allSettings.getCrmToken()}">
                 </td>
             </tr>
             <tr>
-                <td class="w-50 align-middle">Протокол (http/https)</td>
+                <td class="w-50 align-middle">Протокол сервера (http/https)</td>
                 <td class="d-flex align-items-center"><input name="protocol" class="form-control w-50" th:value="${allSettings.getProtocol()}">
                 </td>
             </tr>

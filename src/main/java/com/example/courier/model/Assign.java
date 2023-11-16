@@ -35,4 +35,12 @@ public class Assign {
     @Column(name = "time_end")
     private Date timeEnd  = new Date(0L);
 
+    public Date getTimeStartAlmaty(){
+        return  new Date(timeStart.getTime()+(6*60*60*1000));
+    }
+
+    public Date getTimeEndAlmaty(){
+        return new Date(timeEnd.getTime()+(6*60*60*1000));
+    }
+
 }

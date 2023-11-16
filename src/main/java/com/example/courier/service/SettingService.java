@@ -56,7 +56,9 @@ public class SettingService {
                 getValueByKey("rabbit_password"),
                 getValueByKey("order_distribution_principle"),
                 getValueByKey("beginning_work"),
-                getValueByKey("crm_server_address")
+                getValueByKey("crm_server_address"),
+                getValueByKey("crm_login"),
+                getValueByKey("crm_password")
         );
     }
 
@@ -76,5 +78,7 @@ public class SettingService {
         saveValueByKey("order_distribution_principle",allSettings.orderDistributionPrinciple);
         saveValueByKey("beginning_work",allSettings.beginningWork);
         saveValueByKey("crm_server_address", allSettings.crm_server_address);
+        saveValueByKey("crm_login",allSettings.crmLogin);
+        saveValueByKey("crm_password", allSettings.crmPassword);
     }
 }

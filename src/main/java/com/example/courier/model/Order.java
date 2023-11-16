@@ -71,4 +71,12 @@ public class Order{
 
     @Column
     private String comment;
+
+    public Date getTimeStartAlmaty(){
+        return  new Date(dateStart.getTime()+(6*60*60*1000));
+    }
+
+    public Date getTimeEndAlmaty(){
+        return   new Date(dateEnd.getTime()+(6*60*60*1000));
+    }
 }

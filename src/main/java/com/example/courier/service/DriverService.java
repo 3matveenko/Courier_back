@@ -17,6 +17,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -39,7 +43,7 @@ public class DriverService {
 
     @Scheduled(cron = "0 0 23 * * ?")
     public void setDiversStatus() {
-        Date monthAgo = new Date();
+        Date monthAgo = new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli());
         monthAgo.setMonth(monthAgo.getMonth()-1);
         List<Driver> drivers = driverRepository.findAll();
         for (Driver driver: drivers){
@@ -68,7 +72,7 @@ public class DriverService {
             rabbitService.createExchange(token);
             driver.setStatusDay(false);
             driver.setStatusOrder(false);
-            driver.setLastActivity(new Date());
+            driver.setLastActivity(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
             driverRepository.save(driver);
             sendService.sendTo1cAboutCreatingNewDriver(driver);
             return ResponseEntity.ok(token);
@@ -115,7 +119,7 @@ public class DriverService {
         Gson gson = new Gson();
         Location location = gson.fromJson(message.getBody(), Location.class);
         Driver driver = getDriverByToken(message.getToken());
-        driver.setLastUpdateLocation(new Date(message.getMillisecondsSinceEpoch()));
+        driver.setLastUpdateLocation(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         driver.setLatitude(location.getLatitude());
         driver.setLongitude(location.getLongitude());
         assignService.checkAssignStatus(driver);
@@ -132,8 +136,9 @@ public class DriverService {
                     driver.setTimeFree(null);
                     driver.setStatusOrder(false);
                 } else {
-                    driver.setTimeFree(new Date());
-                    driver.setLastActivity(new Date());
+                    Date date = new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli());
+                    driver.setTimeFree(date);
+                    driver.setLastActivity(date);
                     driver.setStatusOrder(true);
                     driver.setStatusDay(true);
                 }

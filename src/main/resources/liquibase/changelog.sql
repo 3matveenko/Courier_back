@@ -171,3 +171,28 @@ WHERE NOT EXISTS (SELECT 1 FROM t_settings WHERE this_key = 'beginning_work');
 INSERT INTO t_settings (this_key, value)
 SELECT 'crm_server_address', 'http://192.168.0.136:80'
 WHERE NOT EXISTS (SELECT 1 FROM t_settings WHERE this_key = 'crm_server_address');
+
+-- changeset liquibase:2
+
+INSERT INTO t_settings (this_key, value)
+SELECT 'crm_login', 'admin'
+WHERE NOT EXISTS (SELECT 1 FROM t_settings WHERE this_key = 'crm_login');
+
+INSERT INTO t_settings (this_key, value)
+SELECT 'crm_password', '4217777'
+WHERE NOT EXISTS (SELECT 1 FROM t_settings WHERE this_key = 'crm_password');
+
+ALTER TABLE t_drivers
+DROP COLUMN time_free_today;
+
+UPDATE t_users
+SET password = '$2a$11$URHIpYejHnOW74mQ75TRju65Dl27Im.iWlzxLC8Qxg5ybmwVMBc4S',
+    email = 'admin@admin.ru'
+WHERE email = 'admin@mail.ru';
+
+UPDATE t_settings
+SET value = '28080'
+WHERE this_key = 'server_port';
+
+
+

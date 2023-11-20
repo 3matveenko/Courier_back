@@ -12,18 +12,17 @@
     <table class="table table-hover mt-3 table-bordered">
         <thead class="table-secondary">
         <tr>
-            <td>Номер Рейса</td>
+            <td>№</td>
             <td>Водитель</td>
             <td>Время выезда</td>
             <td>Время прибытия</td>
             <td>Адреса доставок</td>
             <td>Время доставок</td>
-
         </tr>
         </thead>
-        <tbody th:each="assign: ${assigns}">
+        <tbody th:each="assign, stat : ${assigns}">
         <tr>
-            <td class="align-middle text-center" th:text="${assign.getId()}"></td>
+            <td class="align-middle text-center" th:text="${stat.index+1}"></td>
             <td class="align-middle text-center" th:text="${assign.getDriver().getName()}"></td>
             <td class="align-middle text-center" th:text="${#dates.format(assign.getTimeStartAlmaty(), 'HH:mm')}"></td>
             <td class="align-middle text-center"

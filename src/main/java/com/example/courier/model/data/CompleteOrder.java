@@ -14,4 +14,6 @@ public class CompleteOrder {
     private String number;
 
     private boolean status;
+
+    private String token;
 }

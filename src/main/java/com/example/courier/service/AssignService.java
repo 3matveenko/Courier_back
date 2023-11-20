@@ -31,6 +31,22 @@ public class AssignService {
      */
     public static double dist = 0.0014;
 
+    public void deleteOrderFromAssign(Order _order){
+        Assign assign = getAssignByOrder(_order);
+        if(assign!=null){
+            assign.getOrders().remove(_order);
+            if(assign.getOrders().isEmpty()){
+                delete(assign);
+            } else {
+                save(assign);
+            }
+        }
+    }
+
+    public void delete(Assign assign){
+        assignRepository.delete(assign);
+    }
+
     public void checkAssignStatus(Driver _driver){
         double feLat = Double.parseDouble(settingService.getValueByKey("fe_latitude"));
         double feLong = Double.parseDouble(settingService.getValueByKey("fe_longtitude"));
@@ -39,7 +55,7 @@ public class AssignService {
             boolean flag = true;
             for (Assign assign:assigns){
                 for (Order order: assign.getOrders()){
-                    if(Objects.equals(order.getDateEnd(), new Date(0L))){
+                    if(order.getStatusDelivery()==1){
                         flag = false;
                     }
                 }
@@ -63,11 +79,21 @@ public class AssignService {
     }
 
     public void craeteNewAssign(List<Order> _orders, Driver _driver){
-        Assign assign = new Assign();
-        assign.setTimeStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
-        assign.setDriver(_driver);
-        assign.setOrders(_orders);
-        save(assign);
+        List<Assign> assigns = getAssignByDriver(_driver);
+        if(assigns.isEmpty()){
+            Assign assign = new Assign();
+            assign.setTimeStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
+            assign.setDriver(_driver);
+            assign.setOrders(_orders);
+            save(assign);
+        } else {
+            Assign assign = assigns.get(assigns.size()-1);
+            assign.getOrders().clear();
+            for (Order order: _orders){
+                assign.getOrders().add(order);
+            }
+            save(assign);
+        }
     }
 
     public List<Assign> getAssignsByDate(Date date1) {

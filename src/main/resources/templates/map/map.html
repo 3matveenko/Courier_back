@@ -238,6 +238,21 @@
         L.marker([43.24404757763458, 76.8905757498524]).addTo(map)
             .bindPopup('Пятый элемент')
             .openPopup();
+        var orders = [[${orders}]];
+        if (orders !== null) {
+            for (var i = 0; i < orders.length; i++) {
+                if (orders[i].statusDelivery === 0) {
+                    L.marker([orders[i].latitude, orders[i].longitude], {icon: dropIcon}).addTo(map)
+                        .bindPopup('Заказ: ' + orders[i].guid)
+                        .openPopup();
+                }
+                if (orders[i].statusDelivery === 1) {
+                    L.marker([orders[i].latitude, orders[i].longitude], {icon: drop2Icon}).addTo(map)
+                        .bindPopup('Заказ: ' + orders[i].guid)
+                        .openPopup();
+                }
+            }
+        }
         var drivers = [[${drivers}]]
         if (drivers !== null) {
             for (var i = 0; i < drivers.length; i++) {
@@ -248,21 +263,6 @@
                     L.marker([drivers[i].latitude, drivers[i].longitude], {icon: truckIcon}).addTo(map)
                         .bindPopup(drivers[i].name)
                         .bindPopup(drivers[i].name + '<br>обновлено: ' + timeDifference + ' мин. назад')
-                }
-            }
-        }
-        var orders = [[${orders}]];
-        if (orders !== null) {
-            for (var i = 0; i < orders.length; i++) {
-                if (orders[i].statusDelivery === 0) {
-                    L.marker([orders[i].latitude, orders[i].longitude], {icon: dropIcon}).addTo(map)
-                        .bindPopup('Клиент: ' + orders[i].current)
-                        .openPopup();
-                }
-                if (orders[i].statusDelivery === 1) {
-                    L.marker([orders[i].latitude, orders[i].longitude], {icon: drop2Icon}).addTo(map)
-                        .bindPopup('Клиент: ' + orders[i].current)
-                        .openPopup();
                 }
             }
         }

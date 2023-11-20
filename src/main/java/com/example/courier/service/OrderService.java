@@ -315,7 +315,7 @@ public class OrderService {
         order.setStatusDelivery(2);
         order.setDateEnd(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         save(order);
-        sendService.sendTo1cAboutCompleteOrder(order.getGuid());
+        sendService.sendTo1cAboutCompleteOrder(order.getGuid(), order.getDriver().getToken());
     }
 
     public void rejectingOrder(Message _message){
@@ -404,6 +404,8 @@ public class OrderService {
         List<Order> orders = new ArrayList<>();
         Order order = getOrderById(_orderId);
         order.setStatusDelivery(0);
+        order.setDriver(null);
+        assignService.deleteOrderFromAssign(order);
         save(order);
         orders.add(order);
         Assign assign = new Assign();

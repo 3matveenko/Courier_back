@@ -12,6 +12,7 @@
     <table class="table table-hover mt-3">
         <thead class="table-secondary">
         <tr>
+            <td>№</td>
             <td>Номер заказа</td>
             <td>Клиент</td>
             <td>Номер телефона</td>
@@ -22,14 +23,15 @@
             <td>Статус</td>
         </tr>
         </thead>
-        <tbody th:each="order: ${orders}">
+        <tbody th:each="order, stat : ${orders}">
         <tr>
+            <td th:text="${stat.index+1}"></td>
             <td th:text="${order.getGuid()}"></td>
             <td th:text="${order.getCurrent()}"></td>
             <td th:text="${order.getPhone()}"></td>
             <td th:text="${order.getAddress()}"></td>
             <td th:text="${#dates.format(order.getTimeStartAlmaty(), 'HH:mm')}"></td>
-            <td th:text="${#dates.format(order.getTimeEndAlmaty(), 'HH:mm')}"></td>
+            <td th:text="${#dates.format(order.getTimeEndAlmaty(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(order.getTimeEndAlmaty(), 'HH:mm')  }"></td>
             <td>
                 <span th:if="${order.getDriver()==null}">Не назначен</span>
                 <span th:if="${order.getDriver()!=null}" th:text="${order.getDriver().getName()}"></span>
@@ -37,7 +39,7 @@
             <td>
                 <span class="text-danger" th:if="${order.getStatusDelivery() == 0}">принят</span>
                 <span class="text-warning" th:if="${order.getStatusDelivery() == 1}">в пути</span>
-                <span class="text-success" th:if="${order.getStatusDelivery() == 2}">доставлено</span>
+                <span class="text-success" th:if="${order.getStatusDelivery() == 2}">доставлен</span>
             </td>
         </tr>
         </tbody>

@@ -66,7 +66,7 @@ public class SendService {
         }
     }
 
-    public void sendTo1cAboutCompleteOrder(String _guid){
+    public void sendTo1cAboutCompleteOrder(String _guid, String _driverToken){
         try {
             URL url = new URL(settingService.getValueByKey("crm_server_address")+"/torgupr/hs/delivery/status");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -78,6 +78,7 @@ public class SendService {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
             CompleteOrder completeOrder = new CompleteOrder();
+            completeOrder.setToken(_driverToken);
             completeOrder.setNumber(_guid);
             completeOrder.setStatus(true);
             String requestBody = toJson(completeOrder);
@@ -99,18 +100,22 @@ public class SendService {
     }
 
     public void sendSms(Message _message){
+        System.out.println("SENDER получил сообщение:"+_message);
         SendSms sendSms = gson.fromJson(_message.getBody(), SendSms.class);
 
         try {
             // Construct URL for the GET request
             URL url = new URL("https://smsc.kz/sys/send.php?login=2KE&psw=studioevolution2018&phones="+sendSms.getPhone()+"&mes="+"Код поддтверждения: "+sendSms.getCode()+"&sender=NOVO");
+            System.out.println("SENDER url :"+url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
+                System.out.println("HTTP_OK");
                 Message newMessage = new Message("","send_sms_success",System.currentTimeMillis(), "");
                 rabbitService.sendMessage(_message.getToken(), toJson(newMessage));
             } else {
+                System.out.println("ошибка");
                 System.out.println(connection.getResponseCode());
                 // log error
             }

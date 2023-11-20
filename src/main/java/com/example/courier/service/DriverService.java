@@ -52,6 +52,7 @@ public class DriverService {
             if(driver.getLastActivity().before(monthAgo)&& !Objects.equals(driver.getLogin(), "")){
                 deleteById(driver.getId());
             }
+            save(driver);
         }
     }
 

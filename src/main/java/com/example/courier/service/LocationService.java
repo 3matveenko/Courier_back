@@ -37,8 +37,9 @@ public class LocationService {
 
         System.out.println("Угол между сторонами A и B: " + angleDegrees + " градусов");
         if(lon1<longitudeFe){
-            angleDegrees = angleDegrees+180;
+            angleDegrees = 180+(180-angleDegrees);
         }
+        System.out.println("возвращаемый угол = "+angleDegrees);
         return angleDegrees;
     }
 

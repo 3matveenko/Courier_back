@@ -6,6 +6,7 @@ import com.example.courier.model.Order;
 import com.example.courier.model.data.Message;
 import com.example.courier.repository.AssignRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,24 @@ public class AssignService {
      */
     public static double dist = 0.0014;
 
+
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void autoCloseAssigns() {
+        for(Assign assign : assignRepository.findByTimeEndBefore(new  Date(1L))){
+            assign.setTimeEnd(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
+            for (int i = assign.getOrders().size()-1; i >=0 ; i--) {
+                if(assign.getOrders().get(i).getStatusDelivery()==1){
+                    assign.getOrders().remove(i);
+                }
+            }
+            if(assign.getOrders().isEmpty()){
+                delete(assign);
+            } else {
+                save(assign);
+            }
+
+        }
+    }
     public void deleteOrderFromAssign(Order _order){
         Assign assign = getAssignByOrder(_order);
         if(assign!=null){

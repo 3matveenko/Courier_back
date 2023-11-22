@@ -39,7 +39,8 @@
             <td>
                 <span class="text-danger" th:if="${order.getStatusDelivery() == 0}">принят</span>
                 <span class="text-warning" th:if="${order.getStatusDelivery() == 1}">в пути</span>
-                <span class="text-success" th:if="${order.getStatusDelivery() == 2}">доставлен</span>
+                <span class="text-success" th:if="${order.getStatusDelivery() == 2 and order.getSendSmS()==true}">доставлен</span>
+                <span class="text-success" th:if="${order.getStatusDelivery() == 2 and order.getSendSmS()==false}">доставлен (без смс)</span>
             </td>
         </tr>
         </tbody>

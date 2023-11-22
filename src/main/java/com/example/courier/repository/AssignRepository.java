@@ -19,4 +19,6 @@ public interface AssignRepository extends JpaRepository<Assign, Long> {
     public List<Assign> findByDriverAndTimeEnd(Driver driver, Date timeEnd);
 
     List<Assign> findByTimeStartBetween(Date date1,Date date2);
+
+    List<Assign> findByTimeEndBefore(Date date);
 }

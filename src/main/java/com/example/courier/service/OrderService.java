@@ -93,6 +93,16 @@ public class OrderService {
 
 
 
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void autoCloseOrders(){
+        for(Order order: orderRepository.findByStatusDelivery(1)){
+
+            order.setStatusDelivery(0);
+            order.setDriver(null);
+            save(order);
+        }
+    }
+
     @Scheduled(cron = "0 0,30 * * * ?")
     public void startTimerSum2(){
         if("schedule".equals(settingService.getValueByKey("order_distribution_principle"))){
@@ -310,9 +320,10 @@ public class OrderService {
         rabbitService.sendMessage(token, gson.toJson(newOrders));
     }
 
-    public void changeStatusDeliveryToComplete(Long _id){
+    public void changeStatusDeliveryToComplete(Long _id, boolean _sendSms){
         Order order = orderRepository.findById(_id).orElseThrow();
         order.setStatusDelivery(2);
+        order.setSendSmS(_sendSms);
         order.setDateEnd(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
         save(order);
         sendService.sendTo1cAboutCompleteOrder(order.getGuid(), order.getDriver().getToken());

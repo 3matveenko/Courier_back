@@ -72,6 +72,12 @@ public class Order{
     @Column
     private String comment;
 
+    /**
+     * Заказ был отправлен с подтверждением по смс да-true/нет-false
+     */
+    @Column
+    private Boolean sendSmS;
+
     public Date getTimeStartAlmaty(){
         return  new Date(dateStart.getTime()+(6*60*60*1000));
     }

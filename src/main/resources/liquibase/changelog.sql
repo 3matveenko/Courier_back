@@ -194,5 +194,8 @@ UPDATE t_settings
 SET value = '28080'
 WHERE this_key = 'server_port';
 
+-- changeset liquibase:3
 
+ALTER TABLE t_orders
+ADD COLUMN sendSmS BOOLEAN;
 

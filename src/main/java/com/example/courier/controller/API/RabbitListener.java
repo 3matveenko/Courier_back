@@ -47,7 +47,11 @@ public class RabbitListener {
                 }
 
                 case ("order_success") -> {
-                    orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()));
+                    orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()), true);
+                    orderService.sendOrderStatusProcessingByToken(message.getToken());
+                }
+                case ("order_success_not_sold")->{
+                    orderService.changeStatusDeliveryToComplete(Long.parseLong(message.getBody()), false);
                     orderService.sendOrderStatusProcessingByToken(message.getToken());
                 }
                 case ("reject_order")-> {
@@ -59,6 +63,7 @@ public class RabbitListener {
                 }
                 case ("logout")->driverService.logout(message.getToken());
                 case ("send_sms")->sendService.sendSms(message);
+
 
             }
         } catch (Exception e){

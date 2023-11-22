@@ -41,8 +41,8 @@ public class DriverService {
     @Autowired
     SendService sendService;
 
-    @Scheduled(cron = "0 0 23 * * ?")
-    public void setDiversStatus() {
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void autoSetDiversStatus() {
         Date monthAgo = new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli());
         monthAgo.setMonth(monthAgo.getMonth()-1);
         List<Driver> drivers = driverRepository.findAll();

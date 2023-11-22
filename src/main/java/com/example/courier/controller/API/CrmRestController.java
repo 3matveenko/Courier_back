@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 
 @Tag(name = "crm", description = "API для запросов от 1c")
 @RestController
@@ -49,19 +50,22 @@ public class CrmRestController {
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "400", description = "Ошибка json")
     @ApiResponse(responseCode = "403", description = "Ошибка доступа")
+    @ApiResponse(responseCode = "302", description = "Не коррекктная работа с полем delivery")
     @PostMapping("/create")
     public ResponseEntity<String> create(
             @RequestBody String json,
             @RequestHeader("Authorization") String token) throws JsonProcessingException {
         try {
-            orderService.startTimerSum();
             securityService.crmSecurity(token);
+            orderService.startTimerSum();
             orderService.newOrder(json);
             return ResponseEntity.ok("ok");
         } catch (JsonProcessingException e){
             return ResponseEntity.status(400).body("Bad request");
         } catch (ForbiddenException e) {
             return ResponseEntity.status(403).body("Invalid token");
+        } catch (ParseException e) {
+            return ResponseEntity.status(302).body("Не коррекктная работа с полем delivery");
         }
     }
 

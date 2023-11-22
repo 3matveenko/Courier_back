@@ -10,6 +10,7 @@ import com.example.courier.model.exception.DriversIsEmptyException;
 import com.example.courier.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -115,6 +117,21 @@ public class OrderService {
         }
     }
 
+    @Scheduled(cron = "0 */10 * ? * *")
+    public void checkingDeferredOrders(){
+        Date now = new Date(System.currentTimeMillis());
+        List<Order> orders = orderRepository.findByDateStartBetween(now, new Date(now.getTime()+(10*60*1001)));
+        if(!orders.isEmpty()){
+            for(Order order:orders){
+                if(order.getStatusDelivery()==-1){
+                    order.setStatusDelivery(0);
+                    save(order);
+                }
+            }
+            startTimerSum();
+        }
+    }
+
     public void stopTimerSum(){
         if(timerSum!=null){
             settingService.setTimerStartTime("none");
@@ -180,15 +197,22 @@ public class OrderService {
         return orderRepository.findById(_order_id).orElseThrow();
     }
 
-    public Long newOrder(String json) throws JsonProcessingException {
+    public Long newOrder(String json) throws JsonProcessingException, ParseException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Order order = objectMapper.readValue(json, Order.class);
-        order.setDateStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
-        order.setStatusDelivery(0);
+        JsonNode jsonNode = objectMapper.readTree(json);
+        String deliveryDate = jsonNode.get("delivery").asText();
+        if(deliveryDate!=null){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            order.setDateStart(new Date(dateFormat.parse(deliveryDate).getTime()-(6*60*60*1000)));
+            order.setStatusDelivery(-1);
+        } else {
+            order.setDateStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
+            order.setStatusDelivery(0);
+        }
         order.setAngle(locationService.angleBetweenVerticalAndPoint(order.getLatitude(), order.getLongitude()));
         orderRepository.save(order);
-
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
         String driverToken = jsonObject.get("driver_token").getAsString();
         if(!"".equals(driverToken)){

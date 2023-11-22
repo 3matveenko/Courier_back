@@ -37,6 +37,7 @@
                 <span th:if="${order.getDriver()!=null}" th:text="${order.getDriver().getName()}"></span>
             </td>
             <td>
+                <span th:if="${order.getStatusDelivery() == -1}">отложен</span>
                 <span class="text-danger" th:if="${order.getStatusDelivery() == 0}">принят</span>
                 <span class="text-warning" th:if="${order.getStatusDelivery() == 1}">в пути</span>
                 <span class="text-success" th:if="${order.getStatusDelivery() == 2 and order.getSendSmS()==true}">доставлен</span>

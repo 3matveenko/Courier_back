@@ -1,5 +1,6 @@
 package com.example.courier.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name="t_orders")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Order{
 
     @Id
@@ -18,9 +20,10 @@ public class Order{
     private Long id;
 
     /**
-     * 0 - принят
-     * 1 - в пути
-     * 2 - доставлен
+     * -1 - отложенный заказ(еще не настало время распределения)
+     * 0  - принят
+     * 1  - в пути
+     * 2  - доставлен
      */
     @Column(name = "status_delivery")
     private int statusDelivery;
@@ -75,7 +78,7 @@ public class Order{
     /**
      * Заказ был отправлен с подтверждением по смс да-true/нет-false
      */
-    @Column
+    @Column(name = "send_sms")
     private Boolean sendSmS;
 
     public Date getTimeStartAlmaty(){

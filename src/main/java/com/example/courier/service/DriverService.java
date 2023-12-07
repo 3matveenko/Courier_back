@@ -58,7 +58,7 @@ public class DriverService {
 
     public List<Driver> getFreeDrivers(){
         List<Driver> drivers = driverRepository.findAllByStatusOrderOrderByTimeFree(true);
-        drivers.sort(Comparator.comparing(Driver::getTimeFree).reversed());
+        drivers.sort(Comparator.comparing(Driver::getTimeFree));
         return drivers;
     }
 
@@ -95,7 +95,7 @@ public class DriverService {
 
     public List<Driver> getAll(){
         List<Driver> drivers =  driverRepository.findAll();
-        drivers.sort(Comparator.comparing(Driver::isStatusOrder).reversed());
+        drivers.sort(Comparator.comparing(Driver::getTimeFree));
         return drivers;
     }
 
@@ -134,7 +134,7 @@ public class DriverService {
             Driver driver = optional.get();
             if(flag){
                 if(driver.isStatusOrder()){
-                    driver.setTimeFree(null);
+                    driver.setTimeFree(new Date(0L));
                     driver.setStatusOrder(false);
                 } else {
                     Date date = new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli());
@@ -158,7 +158,7 @@ public class DriverService {
 
     public void setDeliveryStatusOrderFalseByToken(String _token){
         Driver driver = getDriverByToken(_token);
-        driver.setTimeFree(null);
+        driver.setTimeFree(new Date(0L));
         driver.setStatusOrder(false);
         save(driver);
     }

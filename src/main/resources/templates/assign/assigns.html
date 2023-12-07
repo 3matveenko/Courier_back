@@ -14,10 +14,10 @@
         <tr>
             <td>№</td>
             <td>Водитель</td>
+            <td>Время открытия рейса</td>
             <td>Время выезда</td>
             <td>Время прибытия</td>
-            <td>Адреса доставок</td>
-            <td>Время доставок</td>
+            <td>Заказы</td>
         </tr>
         </thead>
         <tbody th:each="assign, stat : ${assigns}">
@@ -26,19 +26,18 @@
             <td class="align-middle text-center" th:text="${assign.getDriver().getName()}"></td>
             <td class="align-middle text-center" th:text="${#dates.format(assign.getTimeStartAlmaty(), 'HH:mm')}"></td>
             <td class="align-middle text-center"
-                th:text="${#dates.format(assign.getTimeEnd(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(assign.getTimeEndAlmaty(), 'HH:mm')  }"></td>
+                th:text="${#dates.format(assign.getTimeRunAlmaty(),'YYYY') == '1970' ? 'не выехал' : #dates.format(assign.getTimeRunAlmaty(), 'HH:mm')  }"></td>
+            <td class="align-middle text-center"
+                th:text="${#dates.format(assign.getTimeEnd(),'YYYY') == '1970' ? 'не вернулся' : #dates.format(assign.getTimeEndAlmaty(), 'HH:mm')  }"></td>
             <td>
-                <table th:each="order:${assign.getOrders()}">
+                <table  class="table table-bordered">
+                    <tbody th:each="order:${assign.getOrders()}">
                     <tr>
-                        <td th:text="${order.getAddress()}"></td>
+                        <td th:text="${order.getAddress()}" style="width: 70%;"></td>
+                        <td th:text="${#dates.format(order.getTimeStartAlmaty(), 'HH:mm')}" style="width: 15%;"></td>
+                        <td th:text="${#dates.format(order.getTimeEndAlmaty(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(order.getTimeEndAlmaty(), 'HH:mm')}" style="width: 15%;"></td>
                     </tr>
-                </table>
-            </td>
-            <td>
-                <table th:each="order:${assign.getOrders()}">
-                    <tr>
-                        <td th:text="${#dates.format(order.getTimeEndAlmaty(),'YYYY') == '1970' ? 'не доставлен' : #dates.format(order.getTimeEndAlmaty(), 'HH:mm')  }"></td>
-                    </tr>
+                    </tbody>
                 </table>
             </td>
         </tr>

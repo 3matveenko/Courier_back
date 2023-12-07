@@ -199,3 +199,7 @@ WHERE this_key = 'server_port';
 ALTER TABLE t_orders
 ADD COLUMN sendSmS BOOLEAN;
 
+-- changeset liquibase:4
+
+ALTER TABLE t_assigns
+    ADD COLUMN timeRun datetime(6) NULL;

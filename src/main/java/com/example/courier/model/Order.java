@@ -81,6 +81,14 @@ public class Order{
     @Column(name = "send_sms")
     private Boolean sendSmS;
 
+    @Column
+    @Transient
+    private Date delivery;
+
+    @Column
+    @Transient
+    private String driver_token;
+
     public Date getTimeStartAlmaty(){
         return  new Date(dateStart.getTime()+(6*60*60*1000));
     }

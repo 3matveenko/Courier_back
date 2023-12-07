@@ -125,7 +125,8 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body" th:each="driver : ${drivers}"
+                                                <div class="modal-body">
+                                                    <div th:each="driver : ${drivers}"
                                                      th:if="${driver.isStatusDay()}">
                                                     <input th:id="${'driver_name_' + driver.getId()}" th:value="${driver.getToken()}" type="radio" th:name="driverToken">
                                                     <label class="text-success"
@@ -136,12 +137,16 @@
                                                            th:for="${'driver_name_' + driver.getId()}"
                                                            th:if="${!driver.isStatusOrder()}"
                                                            th:text="${driver.getName()}"></label>
+                                                    </div>
+                                                    <input name="driverToken" id="no_driver" th:value="none" type="radio">
+                                                    <label class="text-danger"
+                                                       th:for="no_driver">Без водителя</label>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Отмена
                                                     </button>
-                                                    <button class="btn btn-primary">назначить</button>
+                                                    <button class="btn btn-primary">Назначить</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -212,6 +217,9 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <!--    <script th:src="@{'/js/map.js'}">-->
     <script th:inline="javascript">
+        setTimeout(function() {
+            location.reload();
+        }, 60000);
         // Создание настраиваемой иконки с вашим изображением
         var truckIcon = L.icon({
             iconUrl: '/icons/truck.png', // Путь к изображению иконки

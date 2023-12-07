@@ -201,24 +201,35 @@ public class OrderService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Order order = objectMapper.readValue(json, Order.class);
-        JsonNode jsonNode = objectMapper.readTree(json);
-        String deliveryDate = jsonNode.get("delivery").asText();
-        if(deliveryDate!=null){
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            order.setDateStart(new Date(dateFormat.parse(deliveryDate).getTime()-(6*60*60*1000)));
-            order.setStatusDelivery(-1);
+        Optional<Order> orderOptional = orderRepository.findByGuid(order.getGuid());
+        if(orderOptional.isEmpty()){
+            if(order.getDelivery()==null){
+                order.setDateStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
+                order.setStatusDelivery(0);
+            } else {
+                order.setDateStart(new Date(order.getDelivery().getTime()-(6*60*60*1000)));
+                order.setStatusDelivery(-1);
+            }
+            order.setAngle(locationService.angleBetweenVerticalAndPoint(order.getLatitude(), order.getLongitude()));
         } else {
-            order.setDateStart(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
-            order.setStatusDelivery(0);
+            order.setId(orderOptional.get().getId());
+            order.setDateStart(orderOptional.get().getDateStart());
+            order.setDateEnd(orderOptional.get().getDateEnd());
+            order.setAngle(orderOptional.get().getAngle());
+            order.setDriver(orderOptional.get().getDriver());
         }
-        order.setAngle(locationService.angleBetweenVerticalAndPoint(order.getLatitude(), order.getLongitude()));
         orderRepository.save(order);
-        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-        String driverToken = jsonObject.get("driver_token").getAsString();
-        if(!"".equals(driverToken)){
-            giveTheDriverAnOrder(driverToken, order.getId());
+        if(order.getDriver_token()!=null&&!order.getDriver_token().isEmpty()){
+            giveTheDriverAnOrder(order.getDriver_token(), order.getId());
         }
         return order.getId();
+    }
+
+    public void delete(String json) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Order order = orderRepository.findByGuid(objectMapper.readValue(json, Order.class).getGuid()).orElseThrow();
+        assignService.deleteOrderFromAssign(order);
+        orderRepository.delete(order);
     }
 
     public List<Order> getOrderItWork() {
@@ -252,7 +263,30 @@ public class OrderService {
         lists.add(assignService.getTheBest(orders2, drivers2, sector));
 
         lists.sort(Comparator.comparing(List<Assign>::size));
-        return lists.get(0);
+
+        List<Assign> startList = lists.get(0);
+        List<Assign> sortedList = new ArrayList<>();
+        if(!startList.isEmpty()){
+            boolean flag = true;
+            while (flag){
+                long time = 111701242423608L;
+                int a = 0;
+                for (int i = 0; i < startList.size(); i++) {
+                    for (Order order: startList.get(i).getOrders()){
+                        if(order.getDateStart().getTime()<time){
+                            time = order.getDateStart().getTime();
+                            a = i;
+                        }
+                    }
+                }
+                sortedList.add(startList.get(a));
+                startList.remove(a);
+                if (startList.isEmpty()){
+                    flag = false;
+                }
+            }
+        }
+        return sortedList;
     }
 
     public List<Order> getOrderByDate(Date date1) {
@@ -277,6 +311,10 @@ public class OrderService {
 
     public void changeOrders(List<Assign> assigns){
         List<Driver> drivers = driverService.getFreeDrivers();
+            if (assigns.size() > drivers.size()) {
+                assigns.subList(drivers.size(), assigns.size()).clear();
+                startNoDriverTimer();
+            }
         for(Assign assign: assigns){
             List<Order> orders;
             Assign assignNew = new Assign();
@@ -323,8 +361,10 @@ public class OrderService {
     public void checkingResponseFromDriver(){
         if(!dbAssigns.isEmpty()){
             for (Assign assign: dbAssigns){
-                assign.getDriver().setTimeFree(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
-                driverService.save(assign.getDriver());
+                if(assign.getDriver()!=null){
+                    assign.getDriver().setTimeFree(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
+                    driverService.save(assign.getDriver());
+                }
             }
             dbAssigns.clear();
             try{
@@ -435,7 +475,7 @@ public class OrderService {
               dbAssigns.remove(i);
           }
         }
-        Driver driver = driverService.getDriverByToken(_driverToken);
+
         List<Order> orders = new ArrayList<>();
         Order order = getOrderById(_orderId);
         order.setStatusDelivery(0);
@@ -443,12 +483,15 @@ public class OrderService {
         assignService.deleteOrderFromAssign(order);
         save(order);
         orders.add(order);
-        Assign assign = new Assign();
-        assign.setDriver(driver);
-        assign.setOrders(orders);
-        dbAssigns.add(assign);
-        String body = gson.toJson(orders);
-        Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
-        rabbitService.sendMessage(_driverToken,gson.toJson(newOrders));
+        if (!"none".equals(_driverToken)){
+            Driver driver = driverService.getDriverByToken(_driverToken);
+            Assign assign = new Assign();
+            assign.setDriver(driver);
+            assign.setOrders(orders);
+            dbAssigns.add(assign);
+            String body = gson.toJson(orders);
+            Message newOrders = new Message("","new_order", System.currentTimeMillis(), body);
+            rabbitService.sendMessage(_driverToken,gson.toJson(newOrders));
+        }
     }
 }

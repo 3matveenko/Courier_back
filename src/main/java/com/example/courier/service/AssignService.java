@@ -30,7 +30,7 @@ public class AssignService {
      * в одном градусе широты 111км
      * в одном градусе долготы 85км
      */
-    public static double dist = 0.0014;
+    public static double dist = 0.0021;
 
 
     @Scheduled(cron = "0 0 3 * * ?")
@@ -69,9 +69,10 @@ public class AssignService {
     public void checkAssignStatus(Driver _driver){
         double feLat = Double.parseDouble(settingService.getValueByKey("fe_latitude"));
         double feLong = Double.parseDouble(settingService.getValueByKey("fe_longtitude"));
+        List<Assign> assigns = getAssignByDriver(_driver);
+        boolean flag = true;
+        Long time = ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli();
         if(Math.abs(_driver.getLatitude() - feLat) < dist && Math.abs(_driver.getLongitude() - feLong) < dist){
-            List<Assign> assigns = getAssignByDriver(_driver);
-            boolean flag = true;
             for (Assign assign:assigns){
                 for (Order order: assign.getOrders()){
                     if(order.getStatusDelivery()==1){
@@ -79,10 +80,18 @@ public class AssignService {
                     }
                 }
                 if(flag){
-                    assign.setTimeEnd(new Date(ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneId.of("UTC")).toInstant().toEpochMilli()));
+                    assign.setTimeEnd(new Date(time));
                     save(assign);
                 }
             }
+        } else {
+            for (Assign assign:assigns){
+                if(assign.getTimeRun()==null){
+                    assign.setTimeRun(new Date(time));
+                }
+                save(assign);
+            }
+
         }
     }
 
@@ -128,9 +137,9 @@ public class AssignService {
     public List<Assign> StepByStepPlus(List<Order> _orders, List<Driver> drivers, int sector) {
         List<Assign> listAssign = new ArrayList<>();
         while (!_orders.isEmpty()) {
-            Driver driver = drivers.get(0);
+            //Driver driver = drivers.get(0);
             List<Order> ordersForDriver = new ArrayList<>();
-            if (drivers.size() > 1) {
+            //if (drivers.size() > 1) {
                 boolean bool = true;
                 double secondPoint = _orders.get(0).getAngle() + sector;
                 if (secondPoint > 360) {
@@ -154,13 +163,13 @@ public class AssignService {
                 }
                 indexes.clear();
                 kkk(_orders, ordersForDriver, bool, secondPoint, indexes, firstPoint);
-            } else {
-                ordersForDriver.addAll(_orders);
-                _orders.clear();
-            }
-            drivers.remove(driver);
+//            } else {
+//                ordersForDriver.addAll(_orders);
+//                _orders.clear();
+//            }
+            //drivers.remove(driver);
             Assign assign = new Assign();
-            assign.setDriver(driver);
+            //assign.setDriver(driver);
             assign.setOrders(ordersForDriver);
             listAssign.add(assign);
         }
@@ -197,9 +206,9 @@ public class AssignService {
             if (orders.isEmpty()) {
                 break;
             }
-            Driver driver = drivers.get(0);
+           // Driver driver = drivers.get(0);
             List<Order> ordersForDriver = new ArrayList<>();
-            if (drivers.size() > 1) {
+            //if (drivers.size() > 1) {
                 boolean bool = true;
                 double firstPoint = orders.get(orders.size() - 1).getAngle() - sector;
                 if (firstPoint < 0) {
@@ -223,13 +232,13 @@ public class AssignService {
                 }
                 indexes.clear();
                 kkk(orders, ordersForDriver, bool, secondPoint, indexes, firstPoint);
-            } else {
-                ordersForDriver.addAll(orders);
-                orders.clear();
-            }
-            drivers.remove(driver);
+//            } else {
+//                ordersForDriver.addAll(orders);
+//                orders.clear();
+//            }
+            //drivers.remove(driver);
             Assign assign = new Assign();
-            assign.setDriver(driver);
+           // assign.setDriver(driver);
             assign.setOrders(ordersForDriver);
             listAssign.add(assign);
         } while (!orders.isEmpty());
@@ -264,20 +273,20 @@ public class AssignService {
                 }
             }
 
-            if (drivers.size() > 1) {
+           // if (drivers.size() > 1) {
                 Assign assign = new Assign();
-                assign.setDriver(drivers.get(0));
-                drivers.remove(drivers.get(0));
+                //assign.setDriver(drivers.get(0));
+                //drivers.remove(drivers.get(0));
                 assign.setOrders(ordersForDriver);
 
                 listAssign.add(assign);
-            } else {
-                Assign assign = new Assign();
-                assign.setDriver(drivers.get(0));
-                assign.setOrders(orders);
-                listAssign.add(assign);
-                return listAssign;
-            }
+//            } else {
+//                Assign assign = new Assign();
+//                assign.setDriver(drivers.get(0));
+//                assign.setOrders(orders);
+//                listAssign.add(assign);
+//                return listAssign;
+//            }
             for (Order order : ordersForDriver) {
                 orders.remove(order);
             }

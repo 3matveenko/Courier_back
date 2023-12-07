@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.NoSuchElementException;
 
 @Tag(name = "crm", description = "API для запросов от 1c")
 @RestController
@@ -69,6 +70,30 @@ public class CrmRestController {
         }
     }
 
+    @Operation(summary = "удалить заказ", description =  """
+                                        Input: {
+                                        "guid": "guid"
+                                        } Output:{ok}""")
+    @ApiResponse(responseCode = "200", description = "Успешно")
+    @ApiResponse(responseCode = "404", description = "Нет заказа с таким номером")
+    @ApiResponse(responseCode = "403", description = "Ошибка доступа")
+    @PostMapping("/delete")
+    public ResponseEntity<String> delete(
+            @RequestBody String json,
+            @RequestHeader("Authorization") String token) throws JsonProcessingException {
+        try {
+            securityService.crmSecurity(token);
+            orderService.delete(json);
+            return ResponseEntity.ok("ok");
+        } catch (JsonProcessingException e){
+            return ResponseEntity.status(400).body("Bad request");
+        } catch (ForbiddenException e) {
+            return ResponseEntity.status(403).body("Invalid token");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body("Нет заказа с таким номером");
+        }
+    }
+
     @GetMapping("/old")
     public ResponseEntity<String> get(
             @RequestHeader("Authorization") String headerValue){
@@ -80,41 +105,5 @@ public class CrmRestController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
         }
     }
-//гет запрос
-    public static void sendGetRequestToGoogle() {
-        try {
-            URL url = new URL("http://www.google.com");
 
-            // Открываем соединение (connection) с URL
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // Устанавливаем метод запроса как GET
-            connection.setRequestMethod("GET");
-
-            // Получаем ответ от сервера
-            int responseCode = connection.getResponseCode();
-
-            // Проверяем, что ответ успешный (код 200)
-            if (responseCode == 200) {
-                // Чтение данных из ответа
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-
-                while ((inputLine = reader.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                reader.close();
-
-                // Выводим полученные данные
-                System.out.println(response.toString());
-            } else {
-                System.out.println("GET-запрос не выполнен. Код ответа: " + responseCode);
-            }
-
-            connection.disconnect(); // Закрываем соединение
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -9,10 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
 public interface OrderRepository extends JpaRepository<Order,Long> {
+
+    Optional<Order> findByGuid (String guid);
 
     List<Order> findByStatusDeliveryBetween(Integer a, Integer b);
 
@@ -21,4 +24,6 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> findByStatusDelivery(Integer status);
 
     List<Order> findByStatusDeliveryAndDriver(Integer status, Driver driver);
+
+
 }

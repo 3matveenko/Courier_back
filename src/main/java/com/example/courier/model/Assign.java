@@ -32,11 +32,22 @@ public class Assign {
     @Column(name = "time_start")
     private Date timeStart;
 
+    @Column(name = "time_run")
+    private Date timeRun;
+
     @Column(name = "time_end")
     private Date timeEnd  = new Date(0L);
 
     public Date getTimeStartAlmaty(){
         return  new Date(timeStart.getTime()+(6*60*60*1000));
+    }
+
+    public Date getTimeRunAlmaty(){
+        if(timeRun!=null){
+            return  new Date(timeRun.getTime()+(6*60*60*1000));
+        } else {
+            return new Date(0L);
+        }
     }
 
     public Date getTimeEndAlmaty(){

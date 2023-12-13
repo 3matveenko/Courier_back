@@ -232,6 +232,16 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
+    public String whoIsDriver(String json) throws JsonProcessingException, DriversIsEmptyException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Order order = orderRepository.findByGuid(objectMapper.readValue(json, Order.class).getGuid()).orElseThrow();
+        if (order.getDriver() != null) {
+            return order.getDriver().getToken();
+        } else {
+           throw new DriversIsEmptyException("No driver");
+        }
+    }
+
     public List<Order> getOrderItWork() {
 //        rabbitService.deleteExchange("Driver000");
 //        rabbitService.deleteQueue("Driver000");

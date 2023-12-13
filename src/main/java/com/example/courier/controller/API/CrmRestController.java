@@ -1,5 +1,6 @@
 package com.example.courier.controller.API;
 
+import com.example.courier.model.exception.DriversIsEmptyException;
 import com.example.courier.model.exception.ForbiddenException;
 import com.example.courier.service.LocationService;
 import com.example.courier.service.OrderService;
@@ -94,15 +95,28 @@ public class CrmRestController {
         }
     }
 
-    @GetMapping("/old")
-    public ResponseEntity<String> get(
-            @RequestHeader("Authorization") String headerValue){
-        if ("Bearer qwerty".equals(headerValue)){
-            System.out.println(headerValue);
-            return ResponseEntity.ok("Ok");
-        } else {
-            System.out.println(headerValue);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
+    @Operation(summary = "Дай гуид водителя по гуиду заказа", description =  """
+                                        Input: {
+                                        "guid": "guid"
+                                        } Output:{guid}""")
+    @ApiResponse(responseCode = "200", description = "Успешно")
+    @ApiResponse(responseCode = "404", description = "Нет заказа с таким номером")
+    @ApiResponse(responseCode = "403", description = "Ошибка доступа")
+    @PostMapping("/who_is_driver")
+    public ResponseEntity<String> whoIsDriver(
+            @RequestBody String json,
+            @RequestHeader("Authorization") String token) {
+        try {
+            securityService.crmSecurity(token);
+            return ResponseEntity.ok(orderService.whoIsDriver(json));
+        } catch (JsonProcessingException e){
+            return ResponseEntity.status(400).body("Bad request");
+        } catch (ForbiddenException e) {
+            return ResponseEntity.status(403).body("Invalid token");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body("Нет заказа с таким номером");
+        } catch (DriversIsEmptyException e) {
+            return ResponseEntity.status(406).body("На этот заказ не назначен водитель");
         }
     }
 

@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * Создается, когда водитель отказывается от заказов
+ */
 @Getter
 @Setter
 @Entity

@@ -60,8 +60,7 @@ public class CrmRestController {
         try {
             securityService.crmSecurity(token);
             orderService.startTimerSum();
-            orderService.newOrder(json);
-            return ResponseEntity.ok("ok");
+            return ResponseEntity.ok(orderService.newOrder(json));
         } catch (JsonProcessingException e){
             return ResponseEntity.status(400).body("Bad request");
         } catch (ForbiddenException e) {
@@ -102,6 +101,7 @@ public class CrmRestController {
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Нет заказа с таким номером")
     @ApiResponse(responseCode = "403", description = "Ошибка доступа")
+    @ApiResponse(responseCode = "406", description = "На этот заказ не назначен водитель")
     @PostMapping("/who_is_driver")
     public ResponseEntity<String> whoIsDriver(
             @RequestBody String json,

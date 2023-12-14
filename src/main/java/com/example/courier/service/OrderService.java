@@ -6,6 +6,7 @@ import com.example.courier.model.Order;
 import com.example.courier.model.RejectOrder;
 import com.example.courier.model.data.AssignReject;
 import com.example.courier.model.data.Message;
+import com.example.courier.model.data.ResponseTo1cNewOrder;
 import com.example.courier.model.exception.DriversIsEmptyException;
 import com.example.courier.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -197,7 +198,7 @@ public class OrderService {
         return orderRepository.findById(_order_id).orElseThrow();
     }
 
-    public Long newOrder(String json) throws JsonProcessingException, ParseException {
+    public String newOrder(String json) throws JsonProcessingException, ParseException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Order order = objectMapper.readValue(json, Order.class);
@@ -222,7 +223,7 @@ public class OrderService {
         if(order.getDriver_token()!=null&&!order.getDriver_token().isEmpty()){
             giveTheDriverAnOrder(order.getDriver_token(), order.getId());
         }
-        return order.getId();
+        return sendService.toJson(new ResponseTo1cNewOrder(Math.toIntExact(order.getId())));
     }
 
     public void delete(String json) throws JsonProcessingException {

@@ -3,12 +3,18 @@ package com.example.courier.service;
 import com.example.courier.model.Assign;
 import com.example.courier.model.Driver;
 import com.example.courier.model.Order;
+import com.example.courier.model.data.DateFrom1c;
 import com.example.courier.model.data.Message;
 import com.example.courier.repository.AssignRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -23,6 +29,9 @@ public class AssignService {
 
     @Autowired
     SettingService settingService;
+
+    @Autowired
+    SendService sendService;
 
 
     /**
@@ -122,6 +131,13 @@ public class AssignService {
             }
             save(assign);
         }
+    }
+
+    public String getAssignsByStringDate(String json) throws JsonProcessingException, ParseException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DateFrom1c dateString = objectMapper.readValue(json, DateFrom1c.class);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return sendService.toJson(getAssignsByDate(dateFormat.parse(dateString.getDate())));
     }
 
     public List<Assign> getAssignsByDate(Date date1) {

@@ -1,6 +1,5 @@
 package com.example.courier.controller;
 
-import com.example.courier.model.Setting;
 import com.example.courier.model.User;
 import com.example.courier.model.data.AllSettings;
 import com.example.courier.model.exception.AuthoryException;
@@ -21,7 +20,6 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.HashMap;
 
 @Controller
 public class MainController {

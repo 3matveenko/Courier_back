@@ -93,7 +93,31 @@ public class AppRestController {
         }
     }
 
+    @PostMapping("/testServer")
+    public ResponseEntity<String> testServer(){
+        System.out.println("Зпрос поступил");
+        String response = "{\n" +
+                "    \"StatusCode\": 0,\n" +
+                "    \"Message\": \"OK\",\n" +
+                "    \"Data\": {\n" +
+                "        \"QrToken\": \"51236903777280167836178166503744993984459\",\n" +
+                "        \"ExpireDate\": \"2020-01-16T10:30:00+06\",\n" +
+                "        \"QrPaymentId\": 15,\n" +
+                "        \"PaymentMethods\": [\"Gold\", \"Red\", \"Loan\"],\n" +
+                "        \"QrPaymentBehaviorOptions\": {\n" +
+                "            \"StatusPollingInterval\": 5,\n" +
+                "            \"QrCodeScanWaitTime\": 180,\n" +
+                "            \"PaymentConfirmationTimeout\": 65\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        System.out.println(response);
+        return ResponseEntity.status(200).body(response);
+    }
+
 }
+
+
 
 
 

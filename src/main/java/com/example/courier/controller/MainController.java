@@ -50,6 +50,7 @@ public class MainController {
         session.setAttribute("userNAME", user.getName());
         model.addAttribute("drivers", driverService.getAll());
         model.addAttribute("orders", orderService.getOrderItWork());
+
         return "map/map";
     }
 

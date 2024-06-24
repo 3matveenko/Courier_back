@@ -38,10 +38,25 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'com.google.code.gson:gson:2.8.8'
+	implementation group: 'io.cucumber', name: 'cucumber-java', version: '7.18.0'
+	testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '7.18.0'
+	implementation group: 'io.cucumber', name: 'cucumber-spring', version: '7.18.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
+	implementation 'org.hibernate:hibernate-core:6.1.7.Final'
+	implementation 'org.antlr:antlr4-runtime:4.9.2'
+	testImplementation 'org.junit.vintage:junit-vintage-engine:5.7.0'
+	testImplementation 'org.junit.platform:junit-platform-launcher:1.7.0'
+	testImplementation 'junit:junit:4.13.2'
+	testImplementation 'io.rest-assured:rest-assured:5.3.0'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
-}
+	useJUnitPlatform() // Используем платформу JUnit для запуска тестов
+
+	testLogging {
+		events "passed", "skipped", "failed" // Логируем результаты тестов
+	}
+
+	}

@@ -1,7 +1,6 @@
 package com.example.courier.service;
 
 import com.example.courier.model.Driver;
-import com.example.courier.model.Order;
 import com.example.courier.model.data.Location;
 import com.example.courier.model.data.Message;
 import com.example.courier.model.exception.AuthoryException;
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -100,13 +98,18 @@ public class DriverService {
     }
 
 
-    public void deleteById(Long driverId){
-        Driver driver = driverRepository.findById(driverId).orElseThrow();
-        driver.logout();
-        driver.setLogin("");
-        driver.setPassword("");
-        rabbitService.deleteQueue(driver.getToken());
-        save(driver);
+
+//    public void deleteById(Long driverId){
+//        Driver driver = driverRepository.findById(driverId).orElseThrow();
+//        driver.logout();
+//        driver.setLogin("");
+//        driver.setPassword("");
+//        rabbitService.deleteQueue(driver.getToken());
+//        save(driver);
+//    }
+
+        public void deleteById(Long driverId){
+        driverRepository.deleteById(driverId);
     }
 
     public void save(Driver driver){

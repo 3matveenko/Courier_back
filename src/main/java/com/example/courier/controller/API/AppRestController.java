@@ -1,5 +1,6 @@
 package com.example.courier.controller.API;
 
+import com.example.courier.model.Driver;
 import com.example.courier.model.data.Message;
 import com.example.courier.model.exception.AuthoryException;
 import com.example.courier.model.exception.ForbiddenException;
@@ -63,6 +64,19 @@ public class AppRestController {
             return ResponseEntity.status(403).body("Invalid authorization");
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(400).body("Bad request");
+        }
+    }
+
+    @PostMapping("delete_by_token")
+    public ResponseEntity<String> deleteByToken(
+            @RequestHeader("Authorization") String token
+    ){
+        try {
+            Driver driver = driverService.getDriverByToken(token);
+            driverService.deleteById(driver.getId());
+            return ResponseEntity.status(200).body("OK");
+        } catch (Exception e){
+            return ResponseEntity.status(403).body(e.getMessage());
         }
 
     }

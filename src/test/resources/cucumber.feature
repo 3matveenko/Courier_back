@@ -1,6 +1,6 @@
 Feature: cucumber
     Scenario: Successful login with valid credentials
-    Given my json:
+        Given my json:
             """
             {
                 "login": "1",
@@ -8,7 +8,7 @@ Feature: cucumber
                 "name": "1"
             }
             """
-    When I send a POST request to "/app/create"
+        When I send a POST request to "/app/create"
         Given my json:
                 """
                 {
@@ -17,6 +17,8 @@ Feature: cucumber
                 }
                 """
         When I send a POST request to "/app/authorization"
+        When I delete a test Driver
+
 
 
 
